@@ -18,8 +18,9 @@ public class FunctionProcedure {
     private ArrayList<Param> listParams;
     private ArrayList<Object> listVars; 
     
+    
     public FunctionProcedure(){
-        
+       this.escopo = "global";   
     }
     
     public FunctionProcedure(String type, String id, ArrayList<Param> listParams,ArrayList<Object> listVars){
@@ -27,7 +28,7 @@ public class FunctionProcedure {
      this.id = id;
      this.listParams = listParams;
      this.listVars = listVars;
-     this.escopo = "global";
+        
     }
     /**
      * @return the id

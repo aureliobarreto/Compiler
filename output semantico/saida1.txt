@@ -1,1 +1,1 @@
-Line 74 semantic error: var, const, function or procedures expected
+Sucess! No semantic errors

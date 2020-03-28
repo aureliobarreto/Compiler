@@ -13,13 +13,15 @@ public class Const {
     private String id;
     private String type;
     private String escopo;
-    private String value;  
+    private String value;
+    private boolean wasDeclared;
     
     public Const(String type, String id, String valor){
       this.type = type;
       this.id = id;
       this.value = valor;
       this.escopo = "global";
+      this.wasDeclared = false;
       
     }
     /**
@@ -76,5 +78,19 @@ public class Const {
      */
     public void setValue(String value) {
         this.value = value;
+    }
+
+    /**
+     * @return the wasDeclared
+     */
+    public boolean wasDeclared() {
+        return wasDeclared;
+    }
+
+    /**
+     * @param wasDeclared the wasDeclared to set
+     */
+    public void setWasDeclared(boolean wasDeclared) {
+        this.wasDeclared = wasDeclared;
     }
 }

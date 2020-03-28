@@ -131,7 +131,7 @@ public class Parser {
             Token t = (Token) it.next();
             pilhaTokens.push((Token) t);
         }
-        token = proximoToken();
+        token = proximoToken();        
         start();
         if (arquivoSaida.length() == 0) {
             semErrosSintaticos();

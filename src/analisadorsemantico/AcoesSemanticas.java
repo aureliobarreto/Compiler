@@ -21,19 +21,19 @@ import java.util.Stack;
  * @author Aurelio
  */
 public class AcoesSemanticas {
-    
+
     File arquivoSaida;
     ArrayList<Token> tokens;
     Stack<Token> pilhaTokens;
     String nomeArquivo;
     FileOutputStream fos;
-    Token token;    
+    Token token;
     HashMap<String, Object> tabSimbolos;
     Stack<String> escopo;
     String escopoTemp;
     ArrayList paramsStrTemporarios;
 
-    public AcoesSemanticas(ArrayList<Token> arrayDeTokens, int num, HashMap <String,Object>tabSimbolos) throws FileNotFoundException {        
+    public AcoesSemanticas(ArrayList<Token> arrayDeTokens, int num, HashMap<String, Object> tabSimbolos) throws FileNotFoundException {
         pilhaTokens = new <Token>Stack();
         this.tabSimbolos = tabSimbolos;
         this.tokens = arrayDeTokens;
@@ -41,22 +41,18 @@ public class AcoesSemanticas {
         this.fos = new FileOutputStream(arquivoSaida);
         this.escopo = new <String>Stack();
         this.escopo.push("global");
-        
-        
+
+        /*
         Iterator it = tabSimbolos.keySet().iterator();
         while(it.hasNext()){
             String d;
             d = (String) it.next();
             System.out.println(d);
-        } 
-        
+        } */
     }
-    
-    
-    
+
     public void run() throws IOException {
-        // passar array de tokens para a pilha   
-        Collections.reverse(tokens);
+        // passar array de tokens para a pilha       
         Iterator it = tokens.iterator();
         while (it.hasNext()) {
             Token t = (Token) it.next();
@@ -69,8 +65,7 @@ public class AcoesSemanticas {
         }
         fechaArquivos();
     }
-    
-    
+
     /**
      * Método que devolve o proximo token a ser verificado
      *
@@ -136,26 +131,72 @@ public class AcoesSemanticas {
         return (t.getLexema().equals("int") || t.getLexema().equals("real") || t.getLexema().equals("boolean") || t.getLexema().equals("string")) ? true : false;
 
     }
-    
-    private boolean varExist(String id, String escopo){
-        tabSimbolos.get(escopo);
-        return true;
+
+    private boolean varExist(String id, String escopo) {
+        Object o = tabSimbolos.get(escopo);
+        if (o instanceof GlobalValues) {
+            GlobalValues x = (GlobalValues) o;
+            Iterator it = x.getVariaveis().iterator();
+
+            while (it.hasNext()) {
+                Object tmp = it.next();
+
+                if (tmp instanceof Var) {
+                    Var var = (Var) tmp;
+                    if (var.getId().equals(id)) {
+                        if (var.wasDeclared()) {
+                            return true;
+                        } else {
+                            var.setWasDeclared(true); // só um teste! não é definitivo!
+                            return false;
+                        }
+                    }
+                } else if (tmp instanceof Array) {
+                    Array array = (Array) tmp;
+                    if (array.getId().equals(id)) {
+                        if (array.wasDeclared()) {
+                            return true;
+                        } else {
+                            array.setWasDeclared(true); // só um teste! não é definitivo!
+                            return false;
+                        }
+                    }
+                } else if (tmp instanceof Composta) {
+                    Composta struct = (Composta) tmp;
+                    if (struct.getId().equals(id)) {
+                        if (struct.wasDeclared()) {
+                            return true;
+                        } else {
+                            struct.setWasDeclared(true); // só um teste! não é definitivo!
+                            return false;
+                        }
+                    }
+                }
+            }
+        } else if (o instanceof Composta) {
+            return false;
+        } else if (o instanceof FunctionProcedure) {
+            return false;
+        } else {
+            return false;
+        }
+        return false;
+
     }
-    
-    private String parametros(ArrayList e){
+
+    private String parametros(ArrayList e) {
         String aux = "";
         Iterator it = e.iterator();
-        while(it.hasNext()){
-            aux = aux+(String)it.next();
+        while (it.hasNext()) {
+            aux = aux + (String) it.next();
         }
         return aux;
     }
 //********************** INICIO DOS PROCEDIMENTOS ***************************************
 
     private void start() throws IOException {
-
-        globalValues();       
-        functionsProcedures();
+        globalValues();
+        //functionsProcedures();
     }
 //********************** GLOBAL VALUES *****************************************************
 //                  DECLARAÇÃO DE VARIÁVEIS 
@@ -166,13 +207,13 @@ public class AcoesSemanticas {
             return;
         } else if (token.getLexema().equals("var")) {
             token = proximoToken();
-            
+
             if (token == null) {
                 //erro sintatico
                 return;
             } else if (token.getLexema().equals("{")) {
                 token = proximoToken();
-                varValuesDeclaration();                
+                varValuesDeclaration();
             } else {
                 //erro sintatico
             }
@@ -267,7 +308,7 @@ public class AcoesSemanticas {
         } else if (token.getLexema().equals("function") || token.getLexema().equals("procedures")) {
             // vazio
         } else {
-            setErro(token.getLinha(), "var, const, function or procedures expected");
+            //erro sintatico
         }
 
     }
@@ -310,21 +351,21 @@ public class AcoesSemanticas {
         } else {
             //erro sintatico
         }
-        
+
         if (token == null) {
             //erro sintatico
         } else if (token.getLexema().equals("=")) {
             token = proximoToken();
             valueConst();
         } else {
-           //erro sintatico
+            //erro sintatico
         }
     }
 
 //********** VALUE CONST ******************************************************************************
     private void valueConst() throws IOException {
         if (token == null) {
-           //erro sintatico
+            //erro sintatico
         } else if (token.getTipo().equals("NRO")) {
             token = proximoToken();
         } else if (token.getTipo().equals("CDC")) {
@@ -339,10 +380,11 @@ public class AcoesSemanticas {
 
     private void constMoreAtribuition() throws IOException {
         if (token == null) {
-          //erro sintatico
+            //erro sintatico
         } else if (token.getLexema().equals(",")) {
             token = proximoToken();
             constValuesAtribuition();
+            constMoreAtribuition();
         } else if (token.getLexema().equals(";")) {
             //vazio
         } else {
@@ -357,8 +399,8 @@ public class AcoesSemanticas {
             return;
         } else if (isType(token)) {
             token = proximoToken();
-            varValuesAtribuition();            
-            varMoreAtribuition();          
+            varValuesAtribuition();
+            varMoreAtribuition();
 
             if (token == null) {
                 //erro sintatico
@@ -384,13 +426,13 @@ public class AcoesSemanticas {
 
         } else if (token.getLexema().equals("struct")) {
             token = proximoToken();
-            ideStruct();        
+            ideStruct();
             varValuesDeclaration();
         } else if (token.getLexema().equals("}")) {
             // vazio  
         } else {
             //erro sintatico
-  
+
         }
 
     }
@@ -400,10 +442,14 @@ public class AcoesSemanticas {
         if (token == null) {
             //erro sintatico
         } else if (token.getTipo().equals("IDE")) {
-            if(! varExist(token.getLexema(), escopo.peek())){
-               setErro(token.getLinha(),"Var "+token.getLexema()+"has already been declared in the scope: "+escopo.peek()); 
+            //System.out.println(escopo.peek());
+            if (varExist(token.getLexema(), escopo.peek())) {
+                System.out.println("existe comoooooooo");
+                setErro(token.getLinha(), "Var " + token.getLexema() + " has already been declared in the scope: " + escopo.peek());
+            } else {
+                System.out.println("existe n");
             }
-            token = proximoToken();           
+            token = proximoToken();
             arrayVerification();
         } else {
             //erro sintatico            
@@ -463,8 +509,10 @@ public class AcoesSemanticas {
         if (token == null) {
             //erro sintatico
         } else if (token.getTipo().equals("IDE")) {
+            escopo.push(token.getLexema() + "@" + escopo.peek());
             token = proximoToken();
             ideStruct2();
+            escopo.pop();
         } else {
             //erro sintatico
         }
@@ -473,7 +521,7 @@ public class AcoesSemanticas {
 
     private void ideStruct2() throws IOException {
         if (token == null) {
-           //erro sintatico
+            //erro sintatico
             return;
         } else if (token.getLexema().equals("{")) {
             token = proximoToken();
@@ -494,7 +542,7 @@ public class AcoesSemanticas {
                 token = proximoToken();
                 varValuesDeclaration();
             } else {
-               //erro sintatico
+                //erro sintatico
             }
 
             if (token == null) {
@@ -582,7 +630,7 @@ public class AcoesSemanticas {
             if (token == null) {
                 //erro sintatico
                 return;
-            } else if (isType(token) || token.getTipo().equals("IDE")) {                
+            } else if (isType(token) || token.getTipo().equals("IDE")) {
                 token = proximoToken();
             } else {
                 //erro sintatico
@@ -603,8 +651,8 @@ public class AcoesSemanticas {
                 token = proximoToken();
                 paramsStrTemporarios = new ArrayList();
                 paramList();
-                escopo.push(escopoTemp+parametros(paramsStrTemporarios)); 
-                System.out.println(escopo.peek());
+                escopo.push(escopoTemp + parametros(paramsStrTemporarios));
+
             } else {
                 //erro sintatico
             }
@@ -653,7 +701,7 @@ public class AcoesSemanticas {
                 token = proximoToken();
                 commands();
                 returns();
-                
+
             } else {
                 //erro sintatico
             }
@@ -685,7 +733,7 @@ public class AcoesSemanticas {
                 token = proximoToken();
                 paramsStrTemporarios = new ArrayList();
                 paramList();
-                escopo.push(escopoTemp+parametros(paramsStrTemporarios));
+                escopo.push(escopoTemp + parametros(paramsStrTemporarios));
             } else {
                 //erro sintatico
             }
@@ -756,7 +804,7 @@ public class AcoesSemanticas {
             //erro sintatico
             return;
         } else if (isType(token)) {
-            paramsStrTemporarios.add("@"+token.getLexema());
+            paramsStrTemporarios.add("@" + token.getLexema());
             token = proximoToken();
             if (token == null) {
                 //erro sintatico
@@ -821,7 +869,7 @@ public class AcoesSemanticas {
             //erro sintatico
             return;
         } else {
-            relationalExp();          
+            relationalExp();
             optLogicalExp();
         }
     }
@@ -837,7 +885,7 @@ public class AcoesSemanticas {
                 //erro sintatico
                 return;
             } else if (token.getLexema().equals("true") || token.getLexema().equals("false") || token.getTipo().equals("NRO")) {
-                
+
                 token = proximoToken();
             } else {
                 relationalExp();
