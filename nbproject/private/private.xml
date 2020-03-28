@@ -6,8 +6,11 @@
             <file>file:/C:/Users/Aurelio/Documents/Aurélio%20Academico/9%20semestre/PBL%20Compiladores/Compiler/Compiler/src/analisadorsemantico/FunctionProcedure.java</file>
             <file>file:/C:/Users/Aurelio/Documents/Aurélio%20Academico/9%20semestre/PBL%20Compiladores/Compiler/Compiler/src/analisadorsintatico/Parser.java</file>
             <file>file:/C:/Users/Aurelio/Documents/Aurélio%20Academico/9%20semestre/PBL%20Compiladores/Compiler/Compiler/src/analisadorsemantico/AnalisadorSemantico.java</file>
+            <file>file:/C:/Users/Aurelio/Documents/Aurélio%20Academico/9%20semestre/PBL%20Compiladores/Compiler/Compiler/src/analisadorsemantico/Const.java</file>
+            <file>file:/C:/Users/Aurelio/Documents/Aurélio%20Academico/9%20semestre/PBL%20Compiladores/Compiler/Compiler/src/analisadorsemantico/Composta.java</file>
             <file>file:/C:/Users/Aurelio/Documents/Aurélio%20Academico/9%20semestre/PBL%20Compiladores/Compiler/Compiler/src/analisadorsemantico/GlobalValues.java</file>
             <file>file:/C:/Users/Aurelio/Documents/Aurélio%20Academico/9%20semestre/PBL%20Compiladores/Compiler/Compiler/src/analisadorsemantico/Var.java</file>
+            <file>file:/C:/Users/Aurelio/Documents/Aurélio%20Academico/9%20semestre/PBL%20Compiladores/Compiler/Compiler/src/analisadorsemantico/FuncProcTemporaria.java</file>
             <file>file:/C:/Users/Aurelio/Documents/Aurélio%20Academico/9%20semestre/PBL%20Compiladores/Compiler/Compiler/src/analisadorsemantico/AcoesSemanticas.java</file>
         </group>
     </open-files>

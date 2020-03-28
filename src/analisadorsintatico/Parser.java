@@ -45,7 +45,7 @@ public class Parser {
     VarTemporaria varTemp;
     FuncProcTemporaria funcProcTemp;
     Param paramTemp;
-    String typeVar,escopoTemp;
+    String typeVar, escopoTemp;
     Stack<String> escopo;
 
     public Parser(ArrayList<Token> a, int num) throws FileNotFoundException {
@@ -61,51 +61,62 @@ public class Parser {
         funcProcTemporarias = new <FuncProcTemporaria>ArrayList();
         this.escopo = new <String>Stack();
         this.escopo.push("global");
-        
+
     }
 
     public void preencheTabSimbolos() {
+        // add variaveis das structs
         Iterator it = structTemporarias.iterator();
         while (it.hasNext()) {
             VarTemporaria vt = (VarTemporaria) it.next();
-            vt.setListVars(getVarsByScope(vt.getId()));
+            vt.setListVars(getVarsByScope(vt.getId()+"@"+vt.getEscopo()));
         }
         
+        //add structs como escopo da tabela de simbolos
         it = structTemporarias.iterator();
-         while (it.hasNext()) {
+        while (it.hasNext()) {
             VarTemporaria vt = (VarTemporaria) it.next();
-            tabSimbolos.put(vt.getId()+"@"+vt.getEscopo(), new Composta(vt.getType(),vt.getId(),vt.getEscopo()
-                    ,vt.getParent(),vt.getListVars()));
+            tabSimbolos.put(vt.getId() + "@" + vt.getEscopo(), new Composta(vt.getType(), vt.getId(), vt.getEscopo(),
+                     vt.getParent(), vt.getListVars()));
         }
-         
-        Iterator it2 = funcProcTemporarias.iterator();
+        
+        // add varaveis e structs das funcoes
+        Iterator it2 = funcProcTemporarias.iterator();  
         while (it2.hasNext()) {
             FuncProcTemporaria fct = (FuncProcTemporaria) it2.next();
-            fct.setListVars(getVarsByScope(fct.getId()));
-        } 
-        
+            fct.setListVars(getVarsByScope(fct.getId()+fct.getParams()));
+            Iterator ii = getStructsByScope(fct.getId()+fct.getParams()).iterator();
+            while(ii.hasNext()){
+                Object o = (Object) ii.next();
+                fct.addVar(o); 
+            }          
+        }
+
+        //add constantes  e variaveis globais
         GlobalValues Gv = new GlobalValues(getVarsByScope("global"));
         Iterator it3 = constTemporarias.iterator();
         while (it3.hasNext()) {
             VarTemporaria vt = (VarTemporaria) it3.next();
             Gv.addVar(new Const(vt.getType(), vt.getId(), vt.getValue()));
         }
-        tabSimbolos.put("global", Gv);
-        
+       
+        // add funções e procedimentos como escopo da tabela de simbolos
         it2 = funcProcTemporarias.iterator();
         while (it2.hasNext()) {
-            FuncProcTemporaria fct = (FuncProcTemporaria) it2.next();           
-            tabSimbolos.put(fct.getId()+fct.getParams(),
-                        new FunctionProcedure(fct.getType(), fct.getId(),fct.getListParams(),fct.getListVars()));            
-        }    
-        
+            FuncProcTemporaria fct = (FuncProcTemporaria) it2.next();
+            tabSimbolos.put(fct.getId() + fct.getParams(),
+                    new FunctionProcedure(fct.getType(), fct.getId(), fct.getListParams(), fct.getListVars()));
+            // add funções e procedimentos globais
+            Gv.addVar(new FunctionProcedure(fct.getType(), fct.getId(), fct.getListParams(), fct.getListVars()));
+        }
+        tabSimbolos.put("global", Gv);
     }
 
     public <Object> ArrayList getVarsByScope(String escopo) {
         ArrayList<Object> vars = new <Object>ArrayList();
         Iterator it = varTemporarias.iterator();
         while (it.hasNext()) {
-            VarTemporaria vt = (VarTemporaria) it.next();
+            VarTemporaria vt = (VarTemporaria) it.next();            
             if (vt.getEscopo().equals(escopo)) {
                 vars.add((Object) finalVar(vt));
             }
@@ -123,6 +134,30 @@ public class Parser {
         }
     }
 
+    public <Object> ArrayList getFunctProcByScope(String escopo) {
+        ArrayList<Object> functsProcs = new <Object>ArrayList();
+        Iterator it = funcProcTemporarias.iterator();
+        while (it.hasNext()) {
+            VarTemporaria vt = (VarTemporaria) it.next();
+            if (vt.getEscopo().equals(escopo)) {
+                functsProcs.add((Object) finalVar(vt));
+            }
+        }
+        return functsProcs;
+    }
+
+    public <Object> ArrayList getStructsByScope(String escopo) {
+        ArrayList<Object> structs = new <Object>ArrayList();
+        Iterator it = structTemporarias.iterator();
+        while (it.hasNext()) {
+            VarTemporaria vt = (VarTemporaria) it.next();
+            if (vt.getEscopo().equals(escopo)) {
+                structs.add((Object) finalVar(vt));
+            }
+        }
+        return structs;
+    }
+
     public <String, Object> HashMap run() throws IOException {
         // passar array de tokens para a pilha   
         Collections.reverse(tokens);
@@ -131,14 +166,49 @@ public class Parser {
             Token t = (Token) it.next();
             pilhaTokens.push((Token) t);
         }
-        token = proximoToken();        
+        token = proximoToken();
         start();
         if (arquivoSaida.length() == 0) {
             semErrosSintaticos();
         }
         preencheTabSimbolos();
         fechaArquivos();
-
+        
+        /* **********EXIBE
+        Iterator i = tabSimbolos.keySet().iterator();
+        while(i.hasNext()){
+            String x = (String) i.next();
+            Object o = (Object) tabSimbolos.get(x);
+           
+            if(o instanceof GlobalValues){
+                System.out.println("global");
+              GlobalValues gv = (GlobalValues)o;
+              ArrayList<Object> temp =  (ArrayList<Object>) gv.getVariaveis();
+              for(Object rer :temp){
+                  System.out.println(rer.getClass());  
+              }
+              System.out.println("\n");
+            }else if(o instanceof Composta){
+              Composta cc = (Composta)o;                
+                System.out.println(cc.getId());
+              ArrayList<Object> temp = (ArrayList<Object>)cc.getListVars();
+                  for(Object rer :temp){
+                  System.out.println(rer.getClass());  
+              }
+                  System.out.println("\n");
+            }else if(o instanceof FunctionProcedure){              
+              FunctionProcedure fp = (FunctionProcedure)o;
+              System.out.println("\n");
+              System.out.println(fp.getId());
+              ArrayList<Object> temp = (ArrayList<Object>)fp.getListVars();
+              
+                 for(Object rer :temp){
+                  System.out.println(rer.getClass());  
+              }
+              System.out.println("\n");
+            }
+        }
+        */
         return (HashMap) tabSimbolos;
     }
 
@@ -207,12 +277,12 @@ public class Parser {
         return (t.getLexema().equals("int") || t.getLexema().equals("real") || t.getLexema().equals("boolean") || t.getLexema().equals("string")) ? true : false;
 
     }
-    
-    private String parametros(ArrayList e){
+
+    private String parametros(ArrayList e) {
         String aux = "";
         Iterator it = e.iterator();
-        while(it.hasNext()){
-            aux = aux+(String)it.next();
+        while (it.hasNext()) {
+            aux = aux + (String) it.next();
         }
         return aux;
     }
@@ -222,8 +292,7 @@ public class Parser {
 
         globalValues();
         functionsProcedures();
-        
-       
+
     }
 //********************** GLOBAL VALUES *****************************************************
 //                  DECLARAÇÃO DE VARIÁVEIS 
@@ -542,7 +611,7 @@ public class Parser {
             setErro(" identifier expected");
         } else if (token.getTipo().equals("IDE")) {
             varTemp = new VarTemporaria(typeVar, token.getLexema(), escopo.peek());
-            escopo.push(token.getLexema());
+            escopo.push(token.getLexema()+"@"+escopo.peek());
             token = proximoToken();
             ideStruct2();
             escopo.pop();
@@ -695,7 +764,7 @@ public class Parser {
                 paramsTemporarios = new <Param>ArrayList();
                 paramsStrTemporarios = new ArrayList();
                 paramList();
-                escopo.push(escopoTemp+parametros(paramsStrTemporarios));           
+                escopo.push(escopoTemp + parametros(paramsStrTemporarios));
                 funcProcTemp.setListParams(paramsTemporarios);
                 funcProcTemporarias.add(funcProcTemp);
             } else {
@@ -786,7 +855,7 @@ public class Parser {
                 paramsTemporarios = new <Param>ArrayList();
                 paramsStrTemporarios = new ArrayList();
                 paramList();
-                escopo.push(escopoTemp+parametros(paramsStrTemporarios));
+                escopo.push(escopoTemp + parametros(paramsStrTemporarios));
                 funcProcTemp.setListParams(paramsTemporarios);
                 funcProcTemporarias.add(funcProcTemp);
             } else {
@@ -861,7 +930,7 @@ public class Parser {
             setErro("Type expected");
             return;
         } else if (isType(token) || token.getTipo().equals("IDE")) {
-            paramsStrTemporarios.add("@"+token.getLexema());
+            paramsStrTemporarios.add("@" + token.getLexema());
             paramTemp = new Param(token.getLexema());
             token = proximoToken();
 

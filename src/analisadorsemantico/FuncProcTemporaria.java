@@ -109,4 +109,8 @@ public class FuncProcTemporaria {
     public void setListVars(ArrayList<Object> listVars) {
         this.listVars = listVars;
     }
+    
+    public void addVar(Object o){
+        listVars.add(o);
+    }
 }

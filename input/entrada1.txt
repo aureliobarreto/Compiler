@@ -47,6 +47,7 @@ procedure start(){
 
 function int fnctsss(int t, string d){
        var { int ggg;
+			 int vet[2];
 	     struct sctructxx{
               var {int testaEscopo;}
 	     }
