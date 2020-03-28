@@ -54,6 +54,7 @@ public class AcoesSemanticas {
     public void run() throws IOException {
         // passar array de tokens para a pilha       
         Iterator it = tokens.iterator();
+        System.out.println("Vai");
         while (it.hasNext()) {
             Token t = (Token) it.next();
             pilhaTokens.push((Token) t);
