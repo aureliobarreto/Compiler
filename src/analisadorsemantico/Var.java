@@ -86,6 +86,7 @@ public class Var {
 
     /**
      * @return the wasDeclared
+     * 
      */
     public boolean wasDeclared() {
         return wasDeclared;

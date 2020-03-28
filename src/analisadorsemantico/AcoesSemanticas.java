@@ -19,6 +19,7 @@ import java.util.Stack;
 /**
  *
  * @author Aurelio
+ * @autor Werisson 
  */
 public class AcoesSemanticas {
 
@@ -132,7 +133,7 @@ public class AcoesSemanticas {
 
     }
 
-    private boolean varExist(String id, String escopo) {
+    private boolean Exist(String id, String escopo) {
         Object o = tabSimbolos.get(escopo);
       //  System.out.println(o.toString());
         if (o instanceof GlobalValues) {
@@ -141,8 +142,19 @@ public class AcoesSemanticas {
 
             while (it.hasNext()) {
                 Object tmp = it.next();
-
-                if (tmp instanceof Var) {
+                
+                if (tmp instanceof Const) {
+                    Const constante = (Const) tmp;
+                    if (constante.getId().equals(id)) {
+                        if (constante.wasDeclared()) {
+                            return true;
+                        } else {
+                            constante.setWasDeclared(true); // só um teste! não é definitivo!
+                            return false;
+                        }
+                    }
+                }
+                else if (tmp instanceof Var) {
                     Var var = (Var) tmp;
                     if (var.getId().equals(id)) {
                         if (var.wasDeclared()) {
@@ -183,57 +195,17 @@ public class AcoesSemanticas {
         }
         return false;
     }
-    private boolean constExist(String id, String escopo) {
-        Object o = tabSimbolos.get(escopo);
-      //  System.out.println(o.toString());
-        if (o instanceof GlobalValues) {
-            GlobalValues x = (GlobalValues) o;
-            Iterator it = x.getVariaveis().iterator();
-
-            while (it.hasNext()) {
-                Object tmp = it.next();
-
-                if (tmp instanceof Const) {
-                    Const constante = (Const) tmp;
-                    if (constante.getId().equals(id)) {
-                        if (constante.wasDeclared()) {
-                            return true;
-                        } else {
-                            constante.setWasDeclared(true); // só um teste! não é definitivo!
-                            return false;
-                        }
-                    }
-                } else if (tmp instanceof Array) {
-                    Array array = (Array) tmp;
-                    if (array.getId().equals(id)) {
-                        if (array.wasDeclared()) {
-                            return true;
-                        } else {
-                            array.setWasDeclared(true); // só um teste! não é definitivo!
-                            return false;
-                        }
-                    }
-                } else if (tmp instanceof Composta) {
-                    Composta struct = (Composta) tmp;
-                    if (struct.getId().equals(id)) {
-                        if (struct.wasDeclared()) {
-                            return true;
-                        } else {
-                            struct.setWasDeclared(true); // só um teste! não é definitivo!
-                            return false;
-                        }
-                    }
-                }
+    boolean intVerification(String indice){
+        char[] arrayString;
+        arrayString = indice.toCharArray();
+        for(int i = 0; i < arrayString.length -1; i++){
+            
+            if(arrayString[i]== '-' || arrayString[i]== '.'){
+                return false;
             }
-        } else if (o instanceof Composta) {
-            return false;
-        } else if (o instanceof FunctionProcedure) {
-            return false;
-        } else {
-            return false;
         }
-        return false;
-
+        
+        return true;
     }
 
     private String parametros(ArrayList e) {
@@ -400,7 +372,7 @@ public class AcoesSemanticas {
             return;
         } else if (token.getTipo().equals("IDE")) {
             //System.out.println(token.getLexema() + "!"+ escopo.peek());
-            if(constExist(token.getLexema(), escopo.peek())) {
+            if(Exist(token.getLexema(), escopo.peek())) {
                 System.out.println("Já Declarado");
                 setErro(token.getLinha(), "Const " + token.getLexema() + " has already been declared in the scope: " + escopo.peek());
             } else {
@@ -502,7 +474,7 @@ public class AcoesSemanticas {
             //erro sintatico
         } else if (token.getTipo().equals("IDE")) {
             //System.out.println(token.getLexema()+ "!" + escopo.peek());
-            if (varExist(token.getLexema(), escopo.peek())) {
+            if (Exist(token.getLexema(), escopo.peek())) {
                 System.out.println("existe comoooooooo");
                 setErro(token.getLinha(), "Var " + token.getLexema() + " has already been declared in the scope: " + escopo.peek());
             } else {
@@ -542,8 +514,9 @@ public class AcoesSemanticas {
                 //erro sintatico
                 return;
             } else if (token.getTipo().equals("NRO")) {
-                
-                
+                if(!intVerification(token.getLexema())){
+                    setErro(token.getLinha(),"Inadequate Size");
+                }
                 
                 token = proximoToken();
             } else {
@@ -1663,6 +1636,9 @@ public class AcoesSemanticas {
                 //erro sintatico
                 return;
             } else if (token.getTipo().equals("NRO")) {
+                if(!intVerification(token.getLexema())){
+                    setErro(token.getLinha(),"Inadequate Size");
+                }
                 token = proximoToken();
             } else if (token.getLexema().equals("global") || token.getLexema().equals("local") || token.getTipo().equals("IDE")) {
                 callVariable();

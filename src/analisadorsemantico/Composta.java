@@ -11,6 +11,7 @@ import java.util.ArrayList;
 /**
  *
  * @author Aurelio
+ * @author Werisson
  */
 public class Composta extends Var{
     private String parent;

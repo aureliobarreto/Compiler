@@ -8,6 +8,7 @@ package analisadorsemantico;
 /**
  *
  * @author Aurelio
+ * @author Werisson
  */
 public class Param {
     private String type;

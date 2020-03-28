@@ -16,6 +16,7 @@ import java.util.Iterator;
 /**
  *
  * @author Aurelio
+ * @author Werisson
  */
 public class AnalisadorSemantico {
 

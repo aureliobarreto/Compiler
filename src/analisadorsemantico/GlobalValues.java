@@ -10,6 +10,7 @@ import java.util.ArrayList;
 /**
  *
  * @author Aurelio
+ * @author Werisson
  */
 public class GlobalValues {
   private ArrayList<Object> variaveis;

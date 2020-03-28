@@ -10,6 +10,7 @@ import java.util.ArrayList;
 /**
  *
  * @author Aurelio
+ * @author Werisson
  */
 public class Array extends Var{
   private ArrayList dimensao;

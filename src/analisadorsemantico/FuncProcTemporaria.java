@@ -11,6 +11,7 @@ import java.util.Iterator;
 /**
  *
  * @author Aurelio
+ * @author Werisson
  */
 public class FuncProcTemporaria {
     private String id;

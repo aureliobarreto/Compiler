@@ -11,8 +11,8 @@ var { int birulau, concrete;
       string BLZ;
       boolean aux;
       real aux;
-      int array[2], array[3];
-      int matriz[2][2], matriz[2][3]; 
+      int array[2], array[-3];
+      int matriz[82][22], matriz[-2][3]; 
       typedef struct structdd extends hb20{ var { int j;} }
       struct structdd1 { var { int j;} }
       typedef struct structxandAviao extends cleitonRasta{

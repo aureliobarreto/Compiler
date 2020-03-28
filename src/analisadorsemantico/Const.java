@@ -8,6 +8,7 @@ package analisadorsemantico;
 /**
  *
  * @author Aurelio
+ * @author Werisson
  */
 public class Const {
     private String id;
