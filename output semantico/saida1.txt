@@ -1,1 +1,6 @@
-Sucess! No semantic errors
+Line 5 semantic error: Const ea has already been declared in the scope: global
+Line 6 semantic error: Const rr has already been declared in the scope: global
+Line 11 semantic error: Var BLZ has already been declared in the scope: global
+Line 13 semantic error: Var aux has already been declared in the scope: global
+Line 14 semantic error: Var array has already been declared in the scope: global
+Line 15 semantic error: Var matriz has already been declared in the scope: global

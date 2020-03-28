@@ -1,14 +1,18 @@
-const { int biruley = 3, daaa = 5, dww = 9;
-	boolean s = true;
-	string dd = "dsds";
-	real pi = 3.14;
+const { int biruley = 3, s = 5, dww = 9;
+	string ea = "bfr";
+	boolean rr = false;
+	string f = "ds";
+	int ea = 2;
+	string rr = "D" 
+		
 }
 var { int birulau, concrete;
-      string s;
+      string BLZ;
+      string BLZ;
       boolean aux;
-      real x;
-      int array[2], array1[3];
-      int matriz[2][2], matriz2[2][3]; 
+      real aux;
+      int array[2], array[3];
+      int matriz[2][2], matriz[2][3]; 
       typedef struct structdd extends hb20{ var { int j;} }
       struct structdd1 { var { int j;} }
       typedef struct structxandAviao extends cleitonRasta{

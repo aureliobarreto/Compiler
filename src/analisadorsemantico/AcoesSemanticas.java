@@ -54,7 +54,6 @@ public class AcoesSemanticas {
     public void run() throws IOException {
         // passar array de tokens para a pilha       
         Iterator it = tokens.iterator();
-        System.out.println("Vai");
         while (it.hasNext()) {
             Token t = (Token) it.next();
             pilhaTokens.push((Token) t);
@@ -135,6 +134,7 @@ public class AcoesSemanticas {
 
     private boolean varExist(String id, String escopo) {
         Object o = tabSimbolos.get(escopo);
+      //  System.out.println(o.toString());
         if (o instanceof GlobalValues) {
             GlobalValues x = (GlobalValues) o;
             Iterator it = x.getVariaveis().iterator();
@@ -149,6 +149,57 @@ public class AcoesSemanticas {
                             return true;
                         } else {
                             var.setWasDeclared(true); // só um teste! não é definitivo!
+                            return false;
+                        }
+                    }
+                } else if (tmp instanceof Array) {
+                    Array array = (Array) tmp;
+                    if (array.getId().equals(id)) {
+                        if (array.wasDeclared()) {
+                            return true;
+                        } else {
+                            array.setWasDeclared(true); // só um teste! não é definitivo!
+                            return false;
+                        }
+                    }
+                } else if (tmp instanceof Composta) {
+                    Composta struct = (Composta) tmp;
+                    if (struct.getId().equals(id)) {
+                        if (struct.wasDeclared()) {
+                            return true;
+                        } else {
+                            struct.setWasDeclared(true); // só um teste! não é definitivo!
+                            return false;
+                        }
+                    }
+                }
+            }
+        } else if (o instanceof Composta) {
+            return false;
+        } else if (o instanceof FunctionProcedure) {
+            return false;
+        } else {
+            return false;
+        }
+        return false;
+    }
+    private boolean constExist(String id, String escopo) {
+        Object o = tabSimbolos.get(escopo);
+      //  System.out.println(o.toString());
+        if (o instanceof GlobalValues) {
+            GlobalValues x = (GlobalValues) o;
+            Iterator it = x.getVariaveis().iterator();
+
+            while (it.hasNext()) {
+                Object tmp = it.next();
+
+                if (tmp instanceof Const) {
+                    Const constante = (Const) tmp;
+                    if (constante.getId().equals(id)) {
+                        if (constante.wasDeclared()) {
+                            return true;
+                        } else {
+                            constante.setWasDeclared(true); // só um teste! não é definitivo!
                             return false;
                         }
                     }
@@ -348,6 +399,13 @@ public class AcoesSemanticas {
             //erro sintatico
             return;
         } else if (token.getTipo().equals("IDE")) {
+            //System.out.println(token.getLexema() + "!"+ escopo.peek());
+            if(constExist(token.getLexema(), escopo.peek())) {
+                System.out.println("Já Declarado");
+                setErro(token.getLinha(), "Const " + token.getLexema() + " has already been declared in the scope: " + escopo.peek());
+            } else {
+                System.out.println("Não Declarado");
+            }
             token = proximoToken();
         } else {
             //erro sintatico
@@ -443,7 +501,7 @@ public class AcoesSemanticas {
         if (token == null) {
             //erro sintatico
         } else if (token.getTipo().equals("IDE")) {
-            //System.out.println(escopo.peek());
+            //System.out.println(token.getLexema()+ "!" + escopo.peek());
             if (varExist(token.getLexema(), escopo.peek())) {
                 System.out.println("existe comoooooooo");
                 setErro(token.getLinha(), "Var " + token.getLexema() + " has already been declared in the scope: " + escopo.peek());
@@ -484,6 +542,9 @@ public class AcoesSemanticas {
                 //erro sintatico
                 return;
             } else if (token.getTipo().equals("NRO")) {
+                
+                
+                
                 token = proximoToken();
             } else {
                 //erro sintatico

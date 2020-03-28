@@ -1,1 +1,2 @@
-Sucess! No syntactic errors
+Line 8 syntactic error:  ; expected
+Line 8 syntactic error:  ; expected
