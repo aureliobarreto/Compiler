@@ -92,13 +92,21 @@ public class Parser {
             }          
         }
 
-        //add constantes  e variaveis globais
+        //add constantes,variaveis e structs globais
         GlobalValues Gv = new GlobalValues(getVarsByScope("global"));
         Iterator it3 = constTemporarias.iterator();
         while (it3.hasNext()) {
             VarTemporaria vt = (VarTemporaria) it3.next();
             Gv.addVar(new Const(vt.getType(), vt.getId(), vt.getValue()));
         }
+        it = structTemporarias.iterator();
+        while (it.hasNext()) {
+            VarTemporaria vt = (VarTemporaria) it.next();
+            Gv.addVar(new Composta(vt.getType(), vt.getId(), vt.getEscopo(),
+                     vt.getParent(), vt.getListVars()));
+        }
+        
+        
        
         // add funções e procedimentos como escopo da tabela de simbolos
         it2 = funcProcTemporarias.iterator();
@@ -174,7 +182,7 @@ public class Parser {
         preencheTabSimbolos();
         fechaArquivos();
         
-        /* **********EXIBE
+        /*
         Iterator i = tabSimbolos.keySet().iterator();
         while(i.hasNext()){
             String x = (String) i.next();
@@ -626,6 +634,7 @@ public class Parser {
             setErro(" { or extends expected");
             return;
         } else if (token.getLexema().equals("{")) {
+            varTemp.setParent("");
             structTemporarias.add(varTemp);
             token = proximoToken();
 

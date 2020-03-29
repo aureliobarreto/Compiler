@@ -31,7 +31,7 @@ public class AcoesSemanticas {
     Token token;
     HashMap<String, Object> tabSimbolos;
     Stack<String> escopo;
-    String escopoTemp,typeConstTemp, idConstTemp;
+    String escopoTemp, typeConstTemp, idConstTemp, idStructTemp;
     ArrayList paramsStrTemporarios;
 
     public AcoesSemanticas(ArrayList<Token> arrayDeTokens, int num, HashMap<String, Object> tabSimbolos) throws FileNotFoundException {
@@ -132,13 +132,15 @@ public class AcoesSemanticas {
         return (t.getLexema().equals("int") || t.getLexema().equals("real") || t.getLexema().equals("boolean") || t.getLexema().equals("string")) ? true : false;
 
     }
+
     /**
      * Método que verifica se uma variável ja foi declarada
+     *
      * @param id identificador da variavel
      * @param escopo escopo em que esta contida
-     * @return true: declarada, false: não declarada 
+     * @return true: declarada, false: não declarada
      */
-    private boolean Exist(String id, String escopo) {   
+    private boolean Exist(String id, String escopo) {
         //System.out.println(id + " - "+ escopo);
         Object o = tabSimbolos.get(escopo);
         // System.out.println(o.toString());
@@ -192,7 +194,7 @@ public class AcoesSemanticas {
                 }
             }
             return false;
-            
+
         } else if (o instanceof Composta) {
             Composta composta = (Composta) o;
             Iterator it = composta.getListVars().iterator();
@@ -240,7 +242,7 @@ public class AcoesSemanticas {
                         }
                     }
                 }
-            }          
+            }
             return false;
         } else if (o instanceof FunctionProcedure) {
             FunctionProcedure fpTemp = (FunctionProcedure) o;
@@ -294,37 +296,162 @@ public class AcoesSemanticas {
         }
         return false;
     }
-    
-    public boolean checkType(String type, Token t){
-       if(type.equals("string")){           
-              return t.getTipo().equals("CDC");
-          
-       }else if(type.equals("boolean")){
-           return t.getLexema().equals("true") || t.getLexema().equals("false");
-       }else if(type.equals("int")){
-           
-           if(t.getTipo().equals("NRO")){
-              
-               String[] aux = t.getLexema().split("[.]");               
-               return aux.length == 1;
-           }
-           return false;
-       }else if(type.equals("real")){
-           if(t.getTipo().equals("NRO")){               
-               String lexema = t.getLexema();
-               String aux[] = lexema.split("[.]");
-               return aux.length > 1;
-           }
-           return false;
-       }
-       return false;
+
+    public boolean checkType(String type, Token t) {
+        if (type.equals("string")) {
+            return t.getTipo().equals("CDC");
+
+        } else if (type.equals("boolean")) {
+            return t.getLexema().equals("true") || t.getLexema().equals("false");
+        } else if (type.equals("int")) {
+
+            if (t.getTipo().equals("NRO")) {
+
+                String[] aux = t.getLexema().split("[.]");
+                return aux.length == 1;
+            }
+            return false;
+        } else if (type.equals("real")) {
+            if (t.getTipo().equals("NRO")) {
+                String lexema = t.getLexema();
+                String aux[] = lexema.split("[.]");
+                return aux.length > 1;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    public boolean parentExist(String id, String escopo) {
+        Object o = tabSimbolos.get(escopo);
+        if (o instanceof GlobalValues) {
+            GlobalValues x = (GlobalValues) o;
+            Iterator it = x.getVariaveis().iterator();
+            while (it.hasNext()) {
+                Object tmp = (Object) it.next();
+                if (tmp instanceof Composta) {
+                    if (((Composta) tmp).getId().equals(id)) {
+                        return true;
+                    }
+                }
+            }
+        } else if (o instanceof Composta) {
+            Composta x = (Composta) o;
+            Iterator it = x.getListVars().iterator();
+            while (it.hasNext()) {
+                Object tmp = (Object) it.next();
+                if (tmp instanceof Composta) {
+                    if (((Composta) tmp).getId().equals(id)) {
+                        return true;
+                    }
+                }
+            }
+        } else if (o instanceof FunctionProcedure) {
+            FunctionProcedure x = (FunctionProcedure) o;
+            Iterator it = x.getListVars().iterator();
+            while (it.hasNext()) {
+                Object tmp = (Object) it.next();
+                if (tmp instanceof Composta) {
+                    if (((Composta) tmp).getId().equals(id)) {
+                        return true;
+                    }
+                }
+            }
+        } else {
+            o = tabSimbolos.get("global");
+            GlobalValues x = (GlobalValues) o;
+            Iterator it = x.getVariaveis().iterator();
+            while (it.hasNext()) {
+                Object tmp = (Object) it.next();
+                if (tmp instanceof Composta) {
+                    if (((Composta) tmp).getId().equals(id)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public void conflitParentVerification(String id, String escopo, int linha) throws IOException {
+        Object o = tabSimbolos.get(escopo);
+        if (o instanceof Composta) {            
+            if (!((Composta) o).getParent().equals("")) {
+                Object obj = tabSimbolos.get(((Composta) o).getEscopo());                
+                if (obj instanceof FunctionProcedure) {
+                    Iterator it = ((FunctionProcedure) obj).getListVars().iterator();
+                    while (it.hasNext()) {
+                        Object tmp = it.next();                       
+                        if (tmp instanceof Composta) {
+                            System.out.println(((Composta) tmp).getId()+"-"+((Composta) o).getParent());
+                            if (((Composta) tmp).getId().equals(((Composta) o).getParent())) {
+                                
+                                Iterator i = ((Composta) tmp).getListVars().iterator();
+                                while (i.hasNext()) {
+                                    Object tmp1 = i.next();
+                                    if (tmp1 instanceof Var) {
+                                        Var var = (Var) tmp1;
+                                        if (var.getId().equals(id)) {
+                                            setErro(linha, "In the parent struct there is already a variable with the name \"" + id + "\"");
+                                        }
+                                    } else if (tmp1 instanceof Array) {
+                                        Array array = (Array) tmp1;
+                                        if (array.getId().equals(id)) {
+                                            setErro(linha, "In the parent struct there is already a variable with the name \"" + id + "\"");
+                                        }
+                                    } else if (tmp1 instanceof Composta) {
+                                        Composta struct = (Composta) tmp1;
+                                        if (struct.getId().equals(id)) {
+                                            setErro(linha, "In the parent struct there is already a variable with the name \"" + id + "\"");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                } else if (obj instanceof GlobalValues) {
+                    Iterator it = ((GlobalValues) obj).getVariaveis().iterator();
+                    while (it.hasNext()) {
+                        Object tmp = it.next();
+                        if (tmp instanceof Composta) {                            
+                            if (((Composta) tmp).getId().equals(((Composta) o).getParent())) {                               
+                                Iterator i = ((Composta) tmp).getListVars().iterator();
+                                while (i.hasNext()) {                                    
+                                    Object tmp1 = i.next();
+                                    if (tmp1 instanceof Var) {                                        
+                                        Var var = (Var) tmp1;
+                                        if (var.getId().equals(id)) {                                            
+                                            setErro(linha, "In the parent struct there is already a variable with the name \"" + id + "\"");
+                                        }
+                                    } else if (tmp1 instanceof Array) {
+                                        Array array = (Array) tmp1;
+                                        if (array.getId().equals(id)) {
+                                            setErro(linha, "In the parent struct there is already a variable with the name \"" + id + "\"");
+                                        }
+                                    } else if (tmp1 instanceof Composta) {
+                                        Composta struct = (Composta) tmp1;
+                                        if (struct.getId().equals(id)) {
+                                            setErro(linha, "In the parent struct there is already a variable with the name \"" + id + "\"");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+                
+            }
+
+        }
+
     }
 
     public boolean intVerification(String indice) {
         char[] arrayString;
         arrayString = indice.toCharArray();
         for (int i = 0; i < arrayString.length - 1; i++) {
-
             if (arrayString[i] == '-' || arrayString[i] == '.') {
                 return false;
             }
@@ -505,7 +632,7 @@ public class AcoesSemanticas {
         } else if (token.getTipo().equals("IDE")) {
             idConstTemp = token.getLexema();
             if (Exist(token.getLexema(), escopo.peek())) {
-                setErro(token.getLinha(), "Const " + token.getLexema() + " has already been declared in the scope: " + escopo.peek());
+                setErro(token.getLinha(), "The Const \"" + token.getLexema() + "\" was already been declared in the scope: " + escopo.peek());
             }
             token = proximoToken();
         } else {
@@ -527,24 +654,24 @@ public class AcoesSemanticas {
         if (token == null) {
             //erro sintatico
         } else if (token.getTipo().equals("NRO")) {
-            if(checkType(typeConstTemp,token)){
-                
-            }else{
-                setErro(token.getLinha(),"Value of const \""+idConstTemp+"\" does not match the type");
+            if (checkType(typeConstTemp, token)) {
+
+            } else {
+                setErro(token.getLinha(), "The value of const \"" + idConstTemp + "\" does not match the type");
             }
             token = proximoToken();
         } else if (token.getTipo().equals("CDC")) {
-            if(checkType(typeConstTemp,token)){
-                
-            }else{
-                setErro(token.getLinha(),"Value of const \""+idConstTemp+"\" does not match the type");
+            if (checkType(typeConstTemp, token)) {
+
+            } else {
+                setErro(token.getLinha(), "The value of const \"" + idConstTemp + "\" does not match the type");
             }
             token = proximoToken();
         } else if (token.getLexema().equals("true") || token.getLexema().equals("false")) {
-            if(checkType(typeConstTemp,token)){
-                
-            }else{
-                setErro(token.getLinha(),"Value of const \""+idConstTemp+"\" does not match the type");
+            if (checkType(typeConstTemp, token)) {
+
+            } else {
+                setErro(token.getLinha(), "The value of const \"" + idConstTemp + "\" does not match the type");
             }
             token = proximoToken();
         } else {
@@ -617,9 +744,9 @@ public class AcoesSemanticas {
         if (token == null) {
             //erro sintatico
         } else if (token.getTipo().equals("IDE")) {
-            //System.out.println(token.getLexema()+ "!" + escopo.peek());
+            conflitParentVerification(token.getLexema(), escopo.peek(), token.getLinha());
             if (Exist(token.getLexema(), escopo.peek())) {
-                setErro(token.getLinha(), "Var " + token.getLexema() + " was already been declared in the scope: " + escopo.peek());
+                setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was already been declared in the scope: " + escopo.peek());
             }
             token = proximoToken();
             arrayVerification();
@@ -656,7 +783,7 @@ public class AcoesSemanticas {
                 return;
             } else if (token.getTipo().equals("NRO")) {
                 if (!intVerification(token.getLexema())) {
-                    setErro(token.getLinha(), "Inadequate Size");
+                    setErro(token.getLinha(), "The array index is not an integer type");
                 }
 
                 token = proximoToken();
@@ -685,7 +812,10 @@ public class AcoesSemanticas {
         if (token == null) {
             //erro sintatico
         } else if (token.getTipo().equals("IDE")) {
-            escopo.push(token.getLexema() + "@" + escopo.peek());
+            if (Exist(token.getLexema(), escopo.peek())) {
+                setErro(token.getLinha(), "The Struct \"" + token.getLexema() + "\" was already been declared in the scope: " + escopo.peek());
+            }
+            idStructTemp = token.getLexema();
             token = proximoToken();
             ideStruct2();
             escopo.pop();
@@ -700,6 +830,7 @@ public class AcoesSemanticas {
             //erro sintatico
             return;
         } else if (token.getLexema().equals("{")) {
+            escopo.push(idStructTemp + "@" + escopo.peek());
             token = proximoToken();
 
             if (token == null) {
@@ -744,6 +875,10 @@ public class AcoesSemanticas {
                 //erro sintatico
                 return;
             } else if (token.getTipo().equals("IDE")) {
+                if (!parentExist(token.getLexema(), escopo.peek())) {
+                    setErro(token.getLinha(), "The struct \"" + token.getLexema() + "\" was not declared");
+                }
+                escopo.push(idStructTemp + "@" + escopo.peek());
                 token = proximoToken();
             } else {
                 //erro sintatico

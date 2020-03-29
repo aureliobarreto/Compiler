@@ -14,7 +14,7 @@ var { int birulau, concrete;
       real aux;
       int array[2], array[-3];
       int matriz[82][22], matriz[-2][3]; 
-      typedef struct structdd extends hb20{ var { int j;} }
+      typedef struct structdd extends structdd1{ var { int j;} }
       struct structdd1 { var { int j;} }
       typedef struct structxandAviao extends cleitonRasta{
       var { boolean dsa;} } 
@@ -26,6 +26,9 @@ procedure start(){
 			 int j;
 			struct structStart {
 			var{int x;}
+			}
+			struct structStart {
+			var{int ttt;}
 			}
 			}
 	   read(a);

@@ -1,10 +1,13 @@
-Line 2 semantic error: Value of const "ea" does not match the type
-Line 5 semantic error: Const ea has already been declared in the scope: global
-Line 6 semantic error: Const rr has already been declared in the scope: global
-Line 12 semantic error: Var BLZ was already been declared in the scope: global
-Line 14 semantic error: Var aux was already been declared in the scope: global
-Line 15 semantic error: Var array was already been declared in the scope: global
-Line 15 semantic error: Inadequate Size
-Line 16 semantic error: Var matriz was already been declared in the scope: global
-Line 16 semantic error: Inadequate Size
-Line 26 semantic error: Var j was already been declared in the scope: start
+Line 2 semantic error: The value of const "ea" does not match the type
+Line 5 semantic error: The Const "ea" was already been declared in the scope: global
+Line 6 semantic error: The Const "rr" was already been declared in the scope: global
+Line 12 semantic error: The Var "BLZ" was already been declared in the scope: global
+Line 14 semantic error: The Var "aux" was already been declared in the scope: global
+Line 15 semantic error: The Var "array" was already been declared in the scope: global
+Line 15 semantic error: The array index is not an integer type
+Line 16 semantic error: The Var "matriz" was already been declared in the scope: global
+Line 16 semantic error: The array index is not an integer type
+Line 17 semantic error: In the parent struct there is already a variable with the name "j"
+Line 19 semantic error: The struct "cleitonRasta" was not declared
+Line 26 semantic error: The Var "j" was already been declared in the scope: start
+Line 30 semantic error: The Struct "structStart" was already been declared in the scope: start
