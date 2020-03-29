@@ -346,6 +346,28 @@ public class AcoesSemanticas {
                 }
             }
 
+        } else if (o instanceof GlobalValues) {
+            Iterator it = ((GlobalValues) o).getVariaveis().iterator();
+            while (it.hasNext()) {
+                Object tmp = it.next();
+                if (tmp instanceof Var) {
+                    Var var = (Var) tmp;
+                    if (var.getId().equals(idVar)) {
+                        return var.getType().equals(type);
+                    }
+                } else if (tmp instanceof Array) {
+                    Array array = (Array) tmp;
+                    if (array.getId().equals(idVar)) {
+                        return array.getType().equals(type);
+                    }
+                } else if (tmp instanceof Composta) {
+                    Composta struct = (Composta) tmp;
+                    if (struct.getId().equals(idVar)) {
+                        return true;
+                    }
+                }
+            }
+            
         }
         return false;
     }
@@ -412,10 +434,10 @@ public class AcoesSemanticas {
                     }
                 }
             }
-            
+
         }
-        if(!achouLocal){
-           o = tabSimbolos.get("global");
+        if (!achouLocal) {
+            o = tabSimbolos.get("global");
             GlobalValues x = (GlobalValues) o;
             Iterator it = x.getVariaveis().iterator();
             while (it.hasNext()) {
@@ -425,7 +447,7 @@ public class AcoesSemanticas {
                         return true;
                     }
                 }
-            } 
+            }
         }
         return false;
     }
@@ -1943,7 +1965,8 @@ public class AcoesSemanticas {
                     if (inReturn) {
                         if (modifierTemp.equals("global")) {
                             if (Exist(token.getLexema(), "global")) {
-                                if (!checkReturnType(typeFunctionTemp,"global", token.getLexema())) {
+                                System.out.println(typeFunctionTemp + " - " + token.getLexema());
+                                if (!checkReturnType(typeFunctionTemp, "global", token.getLexema())) {
                                     setErro(token.getLinha(), "Return type of Function \"" + escopoTemp + "\" does not match");
                                 }
                             } else {
@@ -1964,6 +1987,7 @@ public class AcoesSemanticas {
                 }
             }
         } else if (token.getTipo().equals("IDE")) {
+            
             token = proximoToken();
         }
     }
