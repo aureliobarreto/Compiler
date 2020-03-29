@@ -17,11 +17,13 @@ public class FunctionProcedure {
     private String type;
     private String escopo;
     private ArrayList<Param> listParams;
-    private ArrayList<Object> listVars; 
+    private ArrayList<Object> listVars;
+    private boolean wasDeclared;
     
     
     public FunctionProcedure(){
-       this.escopo = "global";   
+       this.escopo = "global";
+       this.wasDeclared = false;
     }
     
     public FunctionProcedure(String type, String id, ArrayList<Param> listParams,ArrayList<Object> listVars){
@@ -29,7 +31,7 @@ public class FunctionProcedure {
      this.id = id;
      this.listParams = listParams;
      this.listVars = listVars;
-        
+     this.wasDeclared = false;   
     }
     /**
      * @return the id
@@ -99,5 +101,19 @@ public class FunctionProcedure {
      */
     public void setListVars(ArrayList<Object> listVars) {
         this.listVars = listVars;
+    }
+
+    /**
+     * @return the wasDeclared
+     */
+    public boolean wasDeclared() {
+        return wasDeclared;
+    }
+
+    /**
+     * @param wasDeclared the wasDeclared to set
+     */
+    public void setWasDeclared(boolean wasDeclared) {
+        this.wasDeclared = wasDeclared;
     }
 }
