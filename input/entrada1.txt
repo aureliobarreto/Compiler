@@ -1,9 +1,10 @@
 const { int biruley = 3, s = 5, dww = 9;
-	string ea = "bfr";
+	string ea = true;
 	boolean rr = false;
 	string f = "ds";
 	int ea = 2;
-	string rr = "D" 
+	string rr = "D";
+	real x8 = 3.14;
 		
 }
 var { int birulau, concrete;
@@ -22,6 +23,7 @@ var { int birulau, concrete;
 
 procedure start(){
        var { int j;
+			 int j;
 			struct structStart {
 			var{int x;}
 			}

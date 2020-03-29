@@ -1,8 +1,10 @@
+Line 2 semantic error: Value of const "ea" does not match the type
 Line 5 semantic error: Const ea has already been declared in the scope: global
 Line 6 semantic error: Const rr has already been declared in the scope: global
-Line 11 semantic error: Var BLZ has already been declared in the scope: global
-Line 13 semantic error: Var aux has already been declared in the scope: global
-Line 14 semantic error: Var array has already been declared in the scope: global
-Line 14 semantic error: Inadequate Size
-Line 15 semantic error: Var matriz has already been declared in the scope: global
+Line 12 semantic error: Var BLZ was already been declared in the scope: global
+Line 14 semantic error: Var aux was already been declared in the scope: global
+Line 15 semantic error: Var array was already been declared in the scope: global
 Line 15 semantic error: Inadequate Size
+Line 16 semantic error: Var matriz was already been declared in the scope: global
+Line 16 semantic error: Inadequate Size
+Line 26 semantic error: Var j was already been declared in the scope: start

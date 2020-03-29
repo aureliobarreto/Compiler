@@ -19,7 +19,7 @@ import java.util.Stack;
 /**
  *
  * @author Aurelio
- * @autor Werisson 
+ * @autor Werisson
  */
 public class AcoesSemanticas {
 
@@ -31,7 +31,7 @@ public class AcoesSemanticas {
     Token token;
     HashMap<String, Object> tabSimbolos;
     Stack<String> escopo;
-    String escopoTemp;
+    String escopoTemp,typeConstTemp, idConstTemp;
     ArrayList paramsStrTemporarios;
 
     public AcoesSemanticas(ArrayList<Token> arrayDeTokens, int num, HashMap<String, Object> tabSimbolos) throws FileNotFoundException {
@@ -132,17 +132,23 @@ public class AcoesSemanticas {
         return (t.getLexema().equals("int") || t.getLexema().equals("real") || t.getLexema().equals("boolean") || t.getLexema().equals("string")) ? true : false;
 
     }
-
-    private boolean Exist(String id, String escopo) {
+    /**
+     * Método que verifica se uma variável ja foi declarada
+     * @param id identificador da variavel
+     * @param escopo escopo em que esta contida
+     * @return true: declarada, false: não declarada 
+     */
+    private boolean Exist(String id, String escopo) {   
+        //System.out.println(id + " - "+ escopo);
         Object o = tabSimbolos.get(escopo);
-      //  System.out.println(o.toString());
+        // System.out.println(o.toString());
         if (o instanceof GlobalValues) {
             GlobalValues x = (GlobalValues) o;
             Iterator it = x.getVariaveis().iterator();
 
             while (it.hasNext()) {
                 Object tmp = it.next();
-                
+
                 if (tmp instanceof Const) {
                     Const constante = (Const) tmp;
                     if (constante.getId().equals(id)) {
@@ -153,8 +159,7 @@ public class AcoesSemanticas {
                             return false;
                         }
                     }
-                }
-                else if (tmp instanceof Var) {
+                } else if (tmp instanceof Var) {
                     Var var = (Var) tmp;
                     if (var.getId().equals(id)) {
                         if (var.wasDeclared()) {
@@ -186,28 +191,154 @@ public class AcoesSemanticas {
                     }
                 }
             }
+            return false;
+            
         } else if (o instanceof Composta) {
+            Composta composta = (Composta) o;
+            Iterator it = composta.getListVars().iterator();
+            while (it.hasNext()) {
+                Object tmp = it.next();
+
+                if (tmp instanceof Const) {
+                    Const constante = (Const) tmp;
+                    if (constante.getId().equals(id)) {
+                        if (constante.wasDeclared()) {
+                            return true;
+                        } else {
+                            constante.setWasDeclared(true); // só um teste! não é definitivo!
+                            return false;
+                        }
+                    }
+                } else if (tmp instanceof Var) {
+                    Var var = (Var) tmp;
+                    if (var.getId().equals(id)) {
+                        if (var.wasDeclared()) {
+                            return true;
+                        } else {
+                            var.setWasDeclared(true); // só um teste! não é definitivo!
+                            return false;
+                        }
+                    }
+                } else if (tmp instanceof Array) {
+                    Array array = (Array) tmp;
+                    if (array.getId().equals(id)) {
+                        if (array.wasDeclared()) {
+                            return true;
+                        } else {
+                            array.setWasDeclared(true); // só um teste! não é definitivo!
+                            return false;
+                        }
+                    }
+                } else if (tmp instanceof Composta) {
+                    Composta struct = (Composta) tmp;
+                    if (struct.getId().equals(id)) {
+                        if (struct.wasDeclared()) {
+                            return true;
+                        } else {
+                            struct.setWasDeclared(true); // só um teste! não é definitivo!
+                            return false;
+                        }
+                    }
+                }
+            }          
             return false;
         } else if (o instanceof FunctionProcedure) {
-            return false;
-        } else {
+            FunctionProcedure fpTemp = (FunctionProcedure) o;
+            Iterator it = fpTemp.getListVars().iterator();
+            while (it.hasNext()) {
+                Object tmp = it.next();
+
+                if (tmp instanceof Const) {
+                    Const constante = (Const) tmp;
+                    if (constante.getId().equals(id)) {
+                        if (constante.wasDeclared()) {
+                            return true;
+                        } else {
+                            constante.setWasDeclared(true); // só um teste! não é definitivo!
+                            return false;
+                        }
+                    }
+                } else if (tmp instanceof Var) {
+                    Var var = (Var) tmp;
+                    if (var.getId().equals(id)) {
+                        if (var.wasDeclared()) {
+                            return true;
+                        } else {
+                            var.setWasDeclared(true); // só um teste! não é definitivo!
+                            return false;
+                        }
+                    }
+                } else if (tmp instanceof Array) {
+                    Array array = (Array) tmp;
+                    if (array.getId().equals(id)) {
+                        if (array.wasDeclared()) {
+                            return true;
+                        } else {
+                            array.setWasDeclared(true); // só um teste! não é definitivo!
+                            return false;
+                        }
+                    }
+                } else if (tmp instanceof Composta) {
+                    Composta struct = (Composta) tmp;
+                    if (struct.getId().equals(id)) {
+                        if (struct.wasDeclared()) {
+                            return true;
+                        } else {
+                            struct.setWasDeclared(true); // só um teste! não é definitivo!
+                            return false;
+                        }
+                    }
+                }
+            }
             return false;
         }
         return false;
     }
-    boolean intVerification(String indice){
+    
+    public boolean checkType(String type, Token t){
+       if(type.equals("string")){           
+              return t.getTipo().equals("CDC");
+          
+       }else if(type.equals("boolean")){
+           return t.getLexema().equals("true") || t.getLexema().equals("false");
+       }else if(type.equals("int")){
+           
+           if(t.getTipo().equals("NRO")){
+              
+               String[] aux = t.getLexema().split("[.]");               
+               return aux.length == 1;
+           }
+           return false;
+       }else if(type.equals("real")){
+           if(t.getTipo().equals("NRO")){               
+               String lexema = t.getLexema();
+               String aux[] = lexema.split("[.]");
+               return aux.length > 1;
+           }
+           return false;
+       }
+       return false;
+    }
+
+    public boolean intVerification(String indice) {
         char[] arrayString;
         arrayString = indice.toCharArray();
-        for(int i = 0; i < arrayString.length -1; i++){
-            
-            if(arrayString[i]== '-' || arrayString[i]== '.'){
+        for (int i = 0; i < arrayString.length - 1; i++) {
+
+            if (arrayString[i] == '-' || arrayString[i] == '.') {
                 return false;
             }
         }
-        
+
         return true;
     }
 
+    /**
+     * Método que transforma o array de parametros em string
+     *
+     * @param e Array a ser transformado
+     * @return String contendo tipos de paremetros
+     */
     private String parametros(ArrayList e) {
         String aux = "";
         Iterator it = e.iterator();
@@ -220,7 +351,7 @@ public class AcoesSemanticas {
 
     private void start() throws IOException {
         globalValues();
-        //functionsProcedures();
+        functionsProcedures();
     }
 //********************** GLOBAL VALUES *****************************************************
 //                  DECLARAÇÃO DE VARIÁVEIS 
@@ -343,6 +474,7 @@ public class AcoesSemanticas {
             //erro sintatico
             return;
         } else if (isType(token)) {
+            typeConstTemp = token.getLexema();
             token = proximoToken();
             constValuesAtribuition();
             constMoreAtribuition();
@@ -371,12 +503,9 @@ public class AcoesSemanticas {
             //erro sintatico
             return;
         } else if (token.getTipo().equals("IDE")) {
-            //System.out.println(token.getLexema() + "!"+ escopo.peek());
-            if(Exist(token.getLexema(), escopo.peek())) {
-                System.out.println("Já Declarado");
+            idConstTemp = token.getLexema();
+            if (Exist(token.getLexema(), escopo.peek())) {
                 setErro(token.getLinha(), "Const " + token.getLexema() + " has already been declared in the scope: " + escopo.peek());
-            } else {
-                System.out.println("Não Declarado");
             }
             token = proximoToken();
         } else {
@@ -398,10 +527,25 @@ public class AcoesSemanticas {
         if (token == null) {
             //erro sintatico
         } else if (token.getTipo().equals("NRO")) {
+            if(checkType(typeConstTemp,token)){
+                
+            }else{
+                setErro(token.getLinha(),"Value of const \""+idConstTemp+"\" does not match the type");
+            }
             token = proximoToken();
         } else if (token.getTipo().equals("CDC")) {
+            if(checkType(typeConstTemp,token)){
+                
+            }else{
+                setErro(token.getLinha(),"Value of const \""+idConstTemp+"\" does not match the type");
+            }
             token = proximoToken();
         } else if (token.getLexema().equals("true") || token.getLexema().equals("false")) {
+            if(checkType(typeConstTemp,token)){
+                
+            }else{
+                setErro(token.getLinha(),"Value of const \""+idConstTemp+"\" does not match the type");
+            }
             token = proximoToken();
         } else {
             //erro sintatico
@@ -475,10 +619,7 @@ public class AcoesSemanticas {
         } else if (token.getTipo().equals("IDE")) {
             //System.out.println(token.getLexema()+ "!" + escopo.peek());
             if (Exist(token.getLexema(), escopo.peek())) {
-                System.out.println("existe comoooooooo");
-                setErro(token.getLinha(), "Var " + token.getLexema() + " has already been declared in the scope: " + escopo.peek());
-            } else {
-                System.out.println("existe n");
+                setErro(token.getLinha(), "Var " + token.getLexema() + " was already been declared in the scope: " + escopo.peek());
             }
             token = proximoToken();
             arrayVerification();
@@ -514,10 +655,10 @@ public class AcoesSemanticas {
                 //erro sintatico
                 return;
             } else if (token.getTipo().equals("NRO")) {
-                if(!intVerification(token.getLexema())){
-                    setErro(token.getLinha(),"Inadequate Size");
+                if (!intVerification(token.getLexema())) {
+                    setErro(token.getLinha(), "Inadequate Size");
                 }
-                
+
                 token = proximoToken();
             } else {
                 //erro sintatico
@@ -745,6 +886,7 @@ public class AcoesSemanticas {
                 //erro sintatico
             } else if (token.getLexema().equals("}")) {
                 token = proximoToken();
+                escopo.pop();
                 functionsProcedures();
 
             } else {
@@ -756,6 +898,7 @@ public class AcoesSemanticas {
                 //erro sintatico
                 return;
             } else if (token.getTipo().equals("IDE") || token.getLexema().equals("start")) {
+                escopoTemp = token.getLexema();
                 token = proximoToken();
             } else {
                 //erro sintatico
@@ -824,6 +967,7 @@ public class AcoesSemanticas {
                 //erro sintatico
             } else if (token.getLexema().equals("}")) {
                 token = proximoToken();
+                escopo.pop();
                 functionsProcedures();
             } else {
                 //erro sintatico
@@ -1636,8 +1780,8 @@ public class AcoesSemanticas {
                 //erro sintatico
                 return;
             } else if (token.getTipo().equals("NRO")) {
-                if(!intVerification(token.getLexema())){
-                    setErro(token.getLinha(),"Inadequate Size");
+                if (!intVerification(token.getLexema())) {
+                    setErro(token.getLinha(), "Inadequate Size");
                 }
                 token = proximoToken();
             } else if (token.getLexema().equals("global") || token.getLexema().equals("local") || token.getTipo().equals("IDE")) {
