@@ -31,8 +31,9 @@ public class AcoesSemanticas {
     Token token;
     HashMap<String, Object> tabSimbolos;
     Stack<String> escopo;
-    String escopoTemp, typeConstTemp, idConstTemp, idStructTemp;
+    String escopoTemp, typeConstTemp, idConstTemp, idStructTemp, typeFunctionTemp, modifierTemp;
     ArrayList paramsStrTemporarios;
+    boolean inReturn;
 
     public AcoesSemanticas(ArrayList<Token> arrayDeTokens, int num, HashMap<String, Object> tabSimbolos) throws FileNotFoundException {
         pilhaTokens = new <Token>Stack();
@@ -42,6 +43,7 @@ public class AcoesSemanticas {
         this.fos = new FileOutputStream(arquivoSaida);
         this.escopo = new <String>Stack();
         this.escopo.push("global");
+        this.inReturn = false;
 
         /*
         Iterator it = tabSimbolos.keySet().iterator();
@@ -297,6 +299,57 @@ public class AcoesSemanticas {
         return false;
     }
 
+    public boolean funcProcExists(String id, String params) {
+        Object o = tabSimbolos.get("global");
+        if (o instanceof GlobalValues) {
+            Iterator it = ((GlobalValues) o).getVariaveis().iterator();
+            while (it.hasNext()) {
+                Object tmp = it.next();
+                if (tmp instanceof FunctionProcedure) {
+                    if (((FunctionProcedure) tmp).getId().equals(id)) {
+                        if (((FunctionProcedure) tmp).getTypesParams().equals(params)) {
+                            if (!((FunctionProcedure) tmp).wasDeclared()) {
+                                ((FunctionProcedure) tmp).setWasDeclared(true);
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean checkReturnType(String type, String escopo, String idVar) {
+        Object o = tabSimbolos.get(escopo);
+        if (o instanceof FunctionProcedure) {
+            Iterator it = ((FunctionProcedure) o).getListVars().iterator();
+            while (it.hasNext()) {
+                Object tmp = it.next();
+                if (tmp instanceof Var) {
+                    Var var = (Var) tmp;
+                    if (var.getId().equals(idVar)) {
+                        return var.getType().equals(type);
+                    }
+                } else if (tmp instanceof Array) {
+                    Array array = (Array) tmp;
+                    if (array.getId().equals(idVar)) {
+                        return array.getType().equals(type);
+                    }
+                } else if (tmp instanceof Composta) {
+                    Composta struct = (Composta) tmp;
+                    if (struct.getId().equals(idVar)) {
+                        return true;
+                    }
+                }
+            }
+
+        }
+        return false;
+    }
+
     public boolean checkType(String type, Token t) {
         if (type.equals("string")) {
             return t.getTipo().equals("CDC");
@@ -323,6 +376,7 @@ public class AcoesSemanticas {
     }
 
     public boolean parentExist(String id, String escopo) {
+        boolean achouLocal = false;
         Object o = tabSimbolos.get(escopo);
         if (o instanceof GlobalValues) {
             GlobalValues x = (GlobalValues) o;
@@ -353,12 +407,15 @@ public class AcoesSemanticas {
                 Object tmp = (Object) it.next();
                 if (tmp instanceof Composta) {
                     if (((Composta) tmp).getId().equals(id)) {
+                        achouLocal = true;
                         return true;
                     }
                 }
             }
-        } else {
-            o = tabSimbolos.get("global");
+            
+        }
+        if(!achouLocal){
+           o = tabSimbolos.get("global");
             GlobalValues x = (GlobalValues) o;
             Iterator it = x.getVariaveis().iterator();
             while (it.hasNext()) {
@@ -368,24 +425,24 @@ public class AcoesSemanticas {
                         return true;
                     }
                 }
-            }
+            } 
         }
         return false;
     }
 
     public void conflitParentVerification(String id, String escopo, int linha) throws IOException {
         Object o = tabSimbolos.get(escopo);
-        if (o instanceof Composta) {            
+        if (o instanceof Composta) {
             if (!((Composta) o).getParent().equals("")) {
-                Object obj = tabSimbolos.get(((Composta) o).getEscopo());                
+                Object obj = tabSimbolos.get(((Composta) o).getEscopo());
                 if (obj instanceof FunctionProcedure) {
                     Iterator it = ((FunctionProcedure) obj).getListVars().iterator();
                     while (it.hasNext()) {
-                        Object tmp = it.next();                       
+                        Object tmp = it.next();
                         if (tmp instanceof Composta) {
-                            System.out.println(((Composta) tmp).getId()+"-"+((Composta) o).getParent());
+                            System.out.println(((Composta) tmp).getId() + "-" + ((Composta) o).getParent());
                             if (((Composta) tmp).getId().equals(((Composta) o).getParent())) {
-                                
+
                                 Iterator i = ((Composta) tmp).getListVars().iterator();
                                 while (i.hasNext()) {
                                     Object tmp1 = i.next();
@@ -414,14 +471,14 @@ public class AcoesSemanticas {
                     Iterator it = ((GlobalValues) obj).getVariaveis().iterator();
                     while (it.hasNext()) {
                         Object tmp = it.next();
-                        if (tmp instanceof Composta) {                            
-                            if (((Composta) tmp).getId().equals(((Composta) o).getParent())) {                               
+                        if (tmp instanceof Composta) {
+                            if (((Composta) tmp).getId().equals(((Composta) o).getParent())) {
                                 Iterator i = ((Composta) tmp).getListVars().iterator();
-                                while (i.hasNext()) {                                    
+                                while (i.hasNext()) {
                                     Object tmp1 = i.next();
-                                    if (tmp1 instanceof Var) {                                        
+                                    if (tmp1 instanceof Var) {
                                         Var var = (Var) tmp1;
-                                        if (var.getId().equals(id)) {                                            
+                                        if (var.getId().equals(id)) {
                                             setErro(linha, "In the parent struct there is already a variable with the name \"" + id + "\"");
                                         }
                                     } else if (tmp1 instanceof Array) {
@@ -441,7 +498,7 @@ public class AcoesSemanticas {
 
                     }
                 }
-                
+
             }
 
         }
@@ -942,6 +999,7 @@ public class AcoesSemanticas {
                 //erro sintatico
                 return;
             } else if (isType(token) || token.getTipo().equals("IDE")) {
+                typeFunctionTemp = token.getLexema();
                 token = proximoToken();
             } else {
                 //erro sintatico
@@ -962,6 +1020,9 @@ public class AcoesSemanticas {
                 token = proximoToken();
                 paramsStrTemporarios = new ArrayList();
                 paramList();
+                if (funcProcExists(escopoTemp, parametros(paramsStrTemporarios))) {
+                    setErro(token.getLinha(), "The Function \"" + escopoTemp + "\" was already been declared in the Scope: " + escopo.peek());
+                }
                 escopo.push(escopoTemp + parametros(paramsStrTemporarios));
 
             } else {
@@ -1046,6 +1107,9 @@ public class AcoesSemanticas {
                 token = proximoToken();
                 paramsStrTemporarios = new ArrayList();
                 paramList();
+                if (funcProcExists(escopoTemp, parametros(paramsStrTemporarios))) {
+                    setErro(token.getLinha(), "The Procedure \"" + escopoTemp + "\" was already been declared in the Scope: " + escopo.peek());
+                }
                 escopo.push(escopoTemp + parametros(paramsStrTemporarios));
             } else {
                 //erro sintatico
@@ -1194,13 +1258,30 @@ public class AcoesSemanticas {
             //erro sintatico
             return;
         } else if (token.getLexema().equals("return")) {
+            inReturn = true;
             token = proximoToken();
             if (token == null) {
                 //erro sintatico
                 return;
-            } else if (token.getLexema().equals("true") || token.getLexema().equals("false") || token.getTipo().equals("NRO")) {
-
+            } else if (token.getLexema().equals("true") || token.getLexema().equals("false") || token.getTipo().equals("NRO")
+                    || token.getTipo().equals("CDC")) {
+                if (!checkType(typeFunctionTemp, token)) {
+                    setErro(token.getLinha(), "Return type of Function \"" + escopoTemp + "\" does not match");
+                }
                 token = proximoToken();
+            } else if (token.getTipo().equals("IDE")) {
+                if (Exist(token.getLexema(), escopo.peek())) {
+                    if (!checkReturnType(typeFunctionTemp, escopo.peek(), token.getLexema())) {
+                        setErro(token.getLinha(), "Return type of Function \"" + escopoTemp + "\" does not match");
+                    }
+                } else {
+                    setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                }
+                callVariable();
+
+            } else if (token.getLexema().equals("global") || token.getLexema().equals("local")) {
+                callVariable();
+
             } else {
                 relationalExp();
             }
@@ -1848,6 +1929,7 @@ public class AcoesSemanticas {
 
     private void modifier() throws IOException {
         if (token.getLexema().equals("global") || token.getLexema().equals("local")) {
+            modifierTemp = token.getLexema();
             token = proximoToken();
             if (token == null) {
                 //erro sintatico
@@ -1858,6 +1940,26 @@ public class AcoesSemanticas {
                     //erro sintatico
                     return;
                 } else if (token.getTipo().equals("IDE")) {
+                    if (inReturn) {
+                        if (modifierTemp.equals("global")) {
+                            if (Exist(token.getLexema(), "global")) {
+                                if (!checkReturnType(typeFunctionTemp,"global", token.getLexema())) {
+                                    setErro(token.getLinha(), "Return type of Function \"" + escopoTemp + "\" does not match");
+                                }
+                            } else {
+                                setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                            }
+                        } else if (modifierTemp.equals("local")) {
+                            if (Exist(token.getLexema(), escopo.peek())) {
+                                if (!checkReturnType(typeFunctionTemp, escopo.peek(), token.getLexema())) {
+                                    setErro(token.getLinha(), "Return type of Function \"" + escopoTemp + "\" does not match");
+                                }
+                            } else {
+                                setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                            }
+                        }
+                        inReturn = false;
+                    }
                     token = proximoToken();
                 }
             }

@@ -21,7 +21,7 @@ var { int birulau, concrete;
 }
 
 
-procedure start(){
+procedure start(int w){
        var { int j;
 			 int j;
 			struct structStart {
@@ -49,6 +49,10 @@ procedure start(){
 		}	
 	
 }
+procedure start(int x){
+var{ }
+
+}
 
 function int fnctsss(int t, string d){
        var { int ggg;
@@ -74,7 +78,7 @@ function int fnctsss(int t, string d){
 		}else{
 		
 		}	
-	return 0;
+	return true;
 }
 
 function boolean funct2(boolean x, int aux, char t){

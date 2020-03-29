@@ -9,5 +9,7 @@ Line 16 semantic error: The Var "matriz" was already been declared in the scope:
 Line 16 semantic error: The array index is not an integer type
 Line 17 semantic error: In the parent struct there is already a variable with the name "j"
 Line 19 semantic error: The struct "cleitonRasta" was not declared
-Line 26 semantic error: The Var "j" was already been declared in the scope: start
-Line 30 semantic error: The Struct "structStart" was already been declared in the scope: start
+Line 26 semantic error: The Var "j" was already been declared in the scope: start@int
+Line 30 semantic error: The Struct "structStart" was already been declared in the scope: start@int
+Line 52 semantic error: The Procedure "start" was already been declared in the Scope: global
+Line 81 semantic error: Return type of Function "fnctsss" does not match

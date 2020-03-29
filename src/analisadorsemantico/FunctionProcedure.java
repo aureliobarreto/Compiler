@@ -6,6 +6,7 @@
 package analisadorsemantico;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  *
@@ -115,5 +116,15 @@ public class FunctionProcedure {
      */
     public void setWasDeclared(boolean wasDeclared) {
         this.wasDeclared = wasDeclared;
+    }
+    
+    public String getTypesParams(){
+        String aux = "";
+        Iterator it = listParams.iterator();
+        while(it.hasNext()){
+            Param p = (Param)it.next();
+            aux = aux+"@"+p.getType();
+        }
+        return aux;
     }
 }

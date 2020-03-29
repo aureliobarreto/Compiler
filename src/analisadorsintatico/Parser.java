@@ -69,27 +69,27 @@ public class Parser {
         Iterator it = structTemporarias.iterator();
         while (it.hasNext()) {
             VarTemporaria vt = (VarTemporaria) it.next();
-            vt.setListVars(getVarsByScope(vt.getId()+"@"+vt.getEscopo()));
+            vt.setListVars(getVarsByScope(vt.getId() + "@" + vt.getEscopo()));
         }
-        
+
         //add structs como escopo da tabela de simbolos
         it = structTemporarias.iterator();
         while (it.hasNext()) {
             VarTemporaria vt = (VarTemporaria) it.next();
             tabSimbolos.put(vt.getId() + "@" + vt.getEscopo(), new Composta(vt.getType(), vt.getId(), vt.getEscopo(),
-                     vt.getParent(), vt.getListVars()));
+                    vt.getParent(), vt.getListVars()));
         }
-        
+
         // add varaveis e structs das funcoes
-        Iterator it2 = funcProcTemporarias.iterator();  
+        Iterator it2 = funcProcTemporarias.iterator();
         while (it2.hasNext()) {
             FuncProcTemporaria fct = (FuncProcTemporaria) it2.next();
-            fct.setListVars(getVarsByScope(fct.getId()+fct.getParams()));
-            Iterator ii = getStructsByScope(fct.getId()+fct.getParams()).iterator();
-            while(ii.hasNext()){
+            fct.setListVars(getVarsByScope(fct.getId() + fct.getParams()));
+            Iterator ii = getStructsByScope(fct.getId() + fct.getParams()).iterator();
+            while (ii.hasNext()) {
                 Object o = (Object) ii.next();
-                fct.addVar(o); 
-            }          
+                fct.addVar(o);
+            }
         }
 
         //add constantes,variaveis e structs globais
@@ -103,11 +103,9 @@ public class Parser {
         while (it.hasNext()) {
             VarTemporaria vt = (VarTemporaria) it.next();
             Gv.addVar(new Composta(vt.getType(), vt.getId(), vt.getEscopo(),
-                     vt.getParent(), vt.getListVars()));
+                    vt.getParent(), vt.getListVars()));
         }
-        
-        
-       
+
         // add funções e procedimentos como escopo da tabela de simbolos
         it2 = funcProcTemporarias.iterator();
         while (it2.hasNext()) {
@@ -124,7 +122,7 @@ public class Parser {
         ArrayList<Object> vars = new <Object>ArrayList();
         Iterator it = varTemporarias.iterator();
         while (it.hasNext()) {
-            VarTemporaria vt = (VarTemporaria) it.next();            
+            VarTemporaria vt = (VarTemporaria) it.next();
             if (vt.getEscopo().equals(escopo)) {
                 vars.add((Object) finalVar(vt));
             }
@@ -181,7 +179,7 @@ public class Parser {
         }
         preencheTabSimbolos();
         fechaArquivos();
-        
+
         /*
         Iterator i = tabSimbolos.keySet().iterator();
         while(i.hasNext()){
@@ -216,7 +214,7 @@ public class Parser {
               System.out.println("\n");
             }
         }
-        */
+         */
         return (HashMap) tabSimbolos;
     }
 
@@ -619,7 +617,7 @@ public class Parser {
             setErro(" identifier expected");
         } else if (token.getTipo().equals("IDE")) {
             varTemp = new VarTemporaria(typeVar, token.getLexema(), escopo.peek());
-            escopo.push(token.getLexema()+"@"+escopo.peek());
+            escopo.push(token.getLexema() + "@" + escopo.peek());
             token = proximoToken();
             ideStruct2();
             escopo.pop();
@@ -1026,9 +1024,15 @@ public class Parser {
             if (token == null) {
                 setErro("return type expected");
                 return;
-            } else if (token.getLexema().equals("true") || token.getLexema().equals("false") || token.getTipo().equals("NRO")) {
+            } else if (token.getLexema().equals("true") || token.getLexema().equals("false") || token.getTipo().equals("NRO")
+                    || token.getTipo().equals("CDC")) {
 
                 token = proximoToken();
+            } else if (token.getTipo().equals("IDE")) {
+                callVariable();
+            } else if (token.getLexema().equals("global") || token.getLexema().equals("local")) {
+                callVariable();
+
             } else {
                 relationalExp();
             }
