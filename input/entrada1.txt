@@ -18,7 +18,14 @@ var { int birulau, concrete;
       typedef struct structdd extends structdd1{ var { int j;} }
       struct structdd1 { var { int j;} }
       typedef struct structxandAviao extends cleitonRasta{
-      var { boolean dsa;} } 
+      var { boolean dsa;} }  
+      struct groot {
+	var { int i; }
+	 
+      }
+      typedef struct euSou extends groot{
+      		var { int i; }
+	{
 }
 
 

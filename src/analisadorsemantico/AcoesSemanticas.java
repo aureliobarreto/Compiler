@@ -1743,7 +1743,7 @@ public class AcoesSemanticas {
             aritmeticExp();
             inequalityExp();
             equalityExp();
-
+ 
         } else {
             //erro sintatico
         }

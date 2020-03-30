@@ -9,6 +9,4 @@ Line 17 semantic error: The Var "matriz" was already been declared in the scope:
 Line 17 semantic error: The array index is not an integer type
 Line 18 semantic error: In the parent struct there is already a variable with the name "j"
 Line 20 semantic error: The struct "cleitonRasta" was not declared
-Line 27 semantic error: The Var "j" was already been declared in the scope: start@int
-Line 31 semantic error: The Struct "structStart" was already been declared in the scope: start@int
-Line 53 semantic error: The Procedure "start" was already been declared in the Scope: global
+Line 27 semantic error: In the parent struct there is already a variable with the name "i"
