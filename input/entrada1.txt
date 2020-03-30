@@ -25,25 +25,29 @@ var { int birulau, concrete;
 procedure start(int w){
        var { int j;
 			 int j;
+			 string stringIndexArray;
 			struct structStart {
-			var{int x;}
+			  var{int x;
+			   int daas[3];
+			   }
 			}
 			struct structStart {
 			var{int ttt;}
 			}
 			}
-	   read(a);
-	   print(a);
-	   i = 5;
+	   read(naoDeclarada);
+	   print(naoDeclarada);
+	   global.naoDeclarada = j;
+	   global.naoDeclarada = 3;
 	   
+	   structStart.daas[3] = j;
 	   
-	   
-        while( i == j){
+        while( j == j){
 		 
 		} 
 		
-		if(i == j)then{
-		 read(a);
+		if(j == j)then{
+		 read(j);
 		
 		}else{
 		
@@ -63,18 +67,18 @@ function int fnctsss(int t, string d){
 	     }
 		 
 	}
-	   read(a);
-	   print(a);
-	   i = 5;
+	   read(naoDeclarada);
+	   print(naoDeclarada);
+	   naoDeclarada = ggg;
+	   ggg = "dsds";
 	   
 	   
-	   
-        while( i == 5){
+        while( naoDeclarada == 5){
 		 
 		} 
 		
-		if(i == j)then{
-		 read(a);
+		if(naoDeclarada == j)then{
+		 read(naoDeclarada);
 		
 		}else{
 		
