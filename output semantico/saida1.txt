@@ -1,19 +1,12 @@
-Line 2 semantic error: The value of const "ea" does not match the type
-Line 5 semantic error: The Const "ea" was already been declared in the scope: global
-Line 6 semantic error: The Const "rr" was already been declared in the scope: global
-Line 12 semantic error: The Var "BLZ" was already been declared in the scope: global
-Line 14 semantic error: The Var "aux" was already been declared in the scope: global
-Line 16 semantic error: The Var "array" was already been declared in the scope: global
-Line 16 semantic error: The array index is not an integer type
-Line 17 semantic error: The Var "matriz" was already been declared in the scope: global
-Line 17 semantic error: The array index is not an integer type
-Line 18 semantic error: In the parent struct there is already a variable with the name "j"
-Line 20 semantic error: The struct "cleitonRasta" was not declared
-Line 27 semantic error: The Var "j" was already been declared in the scope: start@int
-Line 34 semantic error: The Struct "structStart" was already been declared in the scope: start@int
-Line 40 semantic error: The Var "naoDeclarada" was not declared
-Line 40 semantic error: The types atribuition not match
-Line 41 semantic error: The Var "naoDeclarada" was not declared
-Line 57 semantic error: The Procedure "start" was already been declared in the Scope: global
-Line 72 semantic error: The Var "naoDeclarada" was not declared
-Line 73 semantic error: The types atribuition not match
+Line 10 semantic error: The Var "BLZ" was already been declared in the scope: global
+Line 12 semantic error: The Var "aux" was already been declared in the scope: global
+Line 14 semantic error: The array index is not an integer type
+Line 15 semantic error: The Var "matriz" was already been declared in the scope: global
+Line 15 semantic error: The array index is not an integer type
+Line 16 semantic error: In the parent struct there is already a variable with the name "j"
+Line 18 semantic error: The struct "cleitonRasta" was not declared
+Line 31 semantic error: The Struct "structStart" was already been declared in the scope: start@int
+Line 35 semantic error: The Var "naoDeclarada" was not declared
+Line 36 semantic error: The Var "naoDeclarada" was not declared
+Line 47 semantic error: The Var "v" was not declared
+Line 69 semantic error: Return type of Function "fnctsss" does not match

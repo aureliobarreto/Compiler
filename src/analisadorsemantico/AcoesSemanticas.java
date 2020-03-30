@@ -48,13 +48,7 @@ public class AcoesSemanticas {
         this.inCommands = false;
         this.isIndexArrayCheck = false;
 
-        /*
-        Iterator it = tabSimbolos.keySet().iterator();
-        while(it.hasNext()){
-            String d;
-            d = (String) it.next();
-            System.out.println(d);
-        } */
+       
     }
 
     public void run() throws IOException {
@@ -146,9 +140,8 @@ public class AcoesSemanticas {
      * @return true: declarada, false: não declarada
      */
     private boolean Exist(String id, String escopo) {
-        //System.out.println(id + " - "+ escopo);
+
         Object o = tabSimbolos.get(escopo);
-        // System.out.println(o.toString());
         if (o instanceof GlobalValues) {
             GlobalValues x = (GlobalValues) o;
             Iterator it = x.getVariaveis().iterator();
@@ -254,18 +247,8 @@ public class AcoesSemanticas {
             Iterator it = fpTemp.getListVars().iterator();
             while (it.hasNext()) {
                 Object tmp = it.next();
-
-                if (tmp instanceof Const) {
-                    Const constante = (Const) tmp;
-                    if (constante.getId().equals(id)) {
-                        if (constante.wasDeclared()) {
-                            return true;
-                        } else {
-                            constante.setWasDeclared(true); // só um teste! não é definitivo!
-                            return false;
-                        }
-                    }
-                } else if (tmp instanceof Var) {
+                
+                if (tmp instanceof Var) {
                     Var var = (Var) tmp;
                     if (var.getId().equals(id)) {
                         if (var.wasDeclared()) {
@@ -285,8 +268,8 @@ public class AcoesSemanticas {
                             return false;
                         }
                     }
-                } else if (tmp instanceof Composta) {
-                    Composta struct = (Composta) tmp;
+                } else if (tmp instanceof Composta) {                    
+                    Composta struct = (Composta) tmp;                    
                     if (struct.getId().equals(id)) {
                         if (struct.wasDeclared()) {
                             return true;
@@ -565,7 +548,6 @@ public class AcoesSemanticas {
                     while (it.hasNext()) {
                         Object tmp = it.next();
                         if (tmp instanceof Composta) {
-                            //System.out.println(((Composta) tmp).getId() + "-" + ((Composta) o).getParent());
                             if (((Composta) tmp).getId().equals(((Composta) o).getParent())) {
 
                                 Iterator i = ((Composta) tmp).getListVars().iterator();
@@ -1625,6 +1607,7 @@ public class AcoesSemanticas {
             return;
         } else if (token.getLexema().equals("(")) {
             token = proximoToken();
+            inCommands = true;
             readParams();
         } else {
             //erro sintatico
@@ -1686,6 +1669,7 @@ public class AcoesSemanticas {
             return;
         } else if (token.getLexema().equals("(")) {
             token = proximoToken();
+            inCommands = true;
             printParams();
         } else {
             //erro sintatico
@@ -1824,6 +1808,15 @@ public class AcoesSemanticas {
         } else if (token.getTipo().equals("IDE") || token.getLexema().equals("++") || token.getLexema().equals("--")
                 || token.getLexema().equals("true") || token.getLexema().equals("false")
                 || token.getLexema().equals("!")) {
+            if (token.getLexema().equals("true") || token.getLexema().equals("false")) {
+                if (typeCallVar == null) {
+
+                } else {
+                    if (!typeCallVar.equals("boolean")) {
+                        setErro(token.getLinha(), "The types atribuition not match");
+                    }
+                }
+            }
             expression();
         } else if (token.getTipo().equals("NRO")) {
             if (typeCallVar == null) {
@@ -2115,7 +2108,7 @@ public class AcoesSemanticas {
         if (token == null) {
             //erro sintatico
         }
-       
+
         modifier();
         paths();
     }
@@ -2134,7 +2127,7 @@ public class AcoesSemanticas {
                     //erro sintatico
                     return;
                 } else if (token.getTipo().equals("IDE")) {
-                    
+
                     if (inReturn) {
                         if (modifierTemp.equals("global")) {
                             if (Exist(token.getLexema(), "global")) {
@@ -2179,7 +2172,7 @@ public class AcoesSemanticas {
                                 setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
                             } else {
                                 typeCallVar = getTypeVar(token.getLexema(), "global");
-                                if (typeCallVar.equals("int")) {
+                                if (!typeCallVar.equals("int")) {
                                     setErro(token.getLinha(), "The array index is not an integer type");
                                 }
                             }
@@ -2188,7 +2181,7 @@ public class AcoesSemanticas {
                                 setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
                             } else {
                                 typeCallVar = getTypeVar(token.getLexema(), escopo.peek());
-                                if (typeCallVar.equals("int")) {
+                                if (!typeCallVar.equals("int")) {
                                     setErro(token.getLinha(), "The array index is not an integer type");
                                 }
                             }
@@ -2201,6 +2194,7 @@ public class AcoesSemanticas {
             }
 
         } else if (token.getTipo().equals("IDE")) {
+           
             if (inCommands) {
                 if (!Exist(token.getLexema(), escopo.peek())) {
                     setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
@@ -2212,11 +2206,12 @@ public class AcoesSemanticas {
 
             if (isIndexArrayCheck) {
                 typeCallVar = getTypeVar(token.getLexema(), escopo.peek());
-                if (typeCallVar.equals("int")) {
+                if (!typeCallVar.equals("int")) {
                     setErro(token.getLinha(), "The array index is not an integer type");
                 }
 
             }
+
             nameVarTemp = token.getLexema();
             token = proximoToken();
         }

@@ -1,9 +1,7 @@
-const { int biruley = 3, s = 5, dww = 9;
-	string ea = true;
+const { int biruley = 3, s = 5, dww = 9;	
 	boolean rr = false;
 	string f = "ds";
-	int ea = 2;
-	string rr = "D";
+	int ea = 2;	
 	real x8 = 3.14;
 		
 }
@@ -13,7 +11,7 @@ var { int birulau, concrete;
       boolean aux;
       real aux;
 	  int log;
-      int array[2], array[-3];
+      int array[-3];
       int matriz[82][22], matriz[-2][3]; 
       typedef struct structdd extends structdd1{ var { int j;} }
       struct structdd1 { var { int j;} }
@@ -36,7 +34,7 @@ procedure start(int w){
 			}
 	   read(naoDeclarada);
 	   print(naoDeclarada);
-	   global.naoDeclarada = j;
+	   global.log = j;
 	   
 	   
 	   structStart.daas[3] = j;
@@ -46,7 +44,7 @@ procedure start(int w){
 		} 
 		
 		if(j == j)then{
-		 read(j);
+		 read(v);
 		
 		}else{
 		
@@ -57,34 +55,19 @@ procedure start(int w){
 function int fnctsss(int t, string d){
        var { int ggg;
 			 int vet[2];
-	     struct sctructxx{
-              var {int testaEscopo;}
+			 string sout;
+	     struct structxx{
+              var {int testaEscopo;
+					int c[3];}
 	     }
 		 
-	}
-	   read(naoDeclarada);
-	   print(naoDeclarada);
-	   naoDeclarada = ggg;
-	   ggg = "dsds";
-	   
-	   
-        while( naoDeclarada == 5){
 		 
-		} 
+	    }
 		
-		if(naoDeclarada == j)then{
-		 read(naoDeclarada);
-		
-		}else{
-		
-		}	
-	return global.log;
+	   vet[ggg] = 22;
+	  	
+	return "fdf";
 }
 
-function boolean funct2(boolean x, int aux, char t){
-var{ int tameImpala;}
-
-return true;
-}
 
 
