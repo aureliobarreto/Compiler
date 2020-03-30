@@ -1,0 +1,102 @@
+const { int biruley = 3, s = 5, dww = 9;
+	string ea = true;
+	boolean rr = false;
+	string f = "ds";
+	int ea = 2;
+	string rr = "D";
+	real x8 = 3.14;
+		
+}
+var { int birulau, concrete;
+      string BLZ;
+      string BLZ;
+      boolean aux;
+      real aux;
+	  int log;
+      int array[2], array[-3];
+      int matriz[82][22], matriz[-2][3]; 
+      typedef struct structdd extends structdd1{ var { int j;} }
+      struct structdd1 { var { int j;} }
+      typedef struct structxandAviao extends cleitonRasta{
+      var { boolean dsa;} }  
+      struct groot {
+	var { int i; }
+	 
+      }
+      typedef struct euSou extends groot{
+      		var { int i; }
+	{
+}
+
+
+procedure start(int w){
+       var { int j;
+			 int j;
+			 string stringIndexArray;
+			struct structStart {
+			  var{int x;
+			   int daas[3];
+			   }
+			}
+			struct structStart {
+			var{int ttt;}
+			}
+			}
+	   read(naoDeclarada);
+	   print(naoDeclarada);
+	   global.naoDeclarada = j;
+	   global.naoDeclarada = 3;
+	   
+	   structStart.daas[3] = j;
+	   
+        while( j == j){
+		 
+		} 
+		
+		if(j == j)then{
+		 read(j);
+		
+		}else{
+		
+		}	
+	
+}
+procedure start(int x){
+var{ }
+
+}
+
+function int fnctsss(int t, string d){
+       var { int ggg;
+			 int vet[2];
+	     struct sctructxx{
+              var {int testaEscopo;}
+	     }
+		 
+	}
+	   read(naoDeclarada);
+	   print(naoDeclarada);
+	   naoDeclarada = ggg;
+	   ggg = "dsds";
+	   
+	   
+        while( naoDeclarada == 5){
+		 
+		} 
+		
+		if(naoDeclarada == j)then{
+		 read(naoDeclarada);
+		
+		}else{
+		
+		}	
+	return global.log;
+}
+
+function boolean funct2(boolean x, int aux, char t){
+var{ int tameImpala;}
+
+return true;
+}
+
+

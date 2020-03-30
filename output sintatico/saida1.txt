@@ -1,1 +1,4 @@
-Sucess! No syntactic errors
+Line 28 syntactic error: } expected
+Line 28 syntactic error:  Type var expected
+Line 28 syntactic error: } expected
+Line 28 syntactic error: function or procedure expected
