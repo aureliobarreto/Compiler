@@ -2115,7 +2115,7 @@ public class AcoesSemanticas {
         if (token == null) {
             //erro sintatico
         }
-        //System.out.println(token.getLinha() + " - " + token.getLexema() + " - " + escopo.peek() + " - " + inCommands);
+       
         modifier();
         paths();
     }
@@ -2134,6 +2134,7 @@ public class AcoesSemanticas {
                     //erro sintatico
                     return;
                 } else if (token.getTipo().equals("IDE")) {
+                    
                     if (inReturn) {
                         if (modifierTemp.equals("global")) {
                             if (Exist(token.getLexema(), "global")) {

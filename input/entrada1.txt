@@ -23,9 +23,8 @@ var { int birulau, concrete;
 
 
 procedure start(int w){
-       var { int j;
-			 int j;
-			 string stringIndexArray;
+       var { int j;			
+			string stringIndexArray;
 			struct structStart {
 			  var{int x;
 			   int daas[3];
@@ -38,7 +37,7 @@ procedure start(int w){
 	   read(naoDeclarada);
 	   print(naoDeclarada);
 	   global.naoDeclarada = j;
-	   global.naoDeclarada = 3;
+	   
 	   
 	   structStart.daas[3] = j;
 	   
@@ -53,10 +52,6 @@ procedure start(int w){
 		
 		}	
 	
-}
-procedure start(int x){
-var{ }
-
 }
 
 function int fnctsss(int t, string d){
