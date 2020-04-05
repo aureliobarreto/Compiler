@@ -19,37 +19,40 @@ var { int birulau, concrete;
       struct structdd1 { var { int j;} }
       typedef struct structxandAviao extends cleitonRasta{
       var { boolean dsa;} }  
-      struct groot {
-	var { int i; }
-	 
-      }
-      typedef struct euSou extends groot{
-      		var { int i; }
-	{
+     
 }
 
 
-procedure start(int w){
+procedure start(){
        var { int j;
 			 int j;
 			 string stringIndexArray;
 			struct structStart {
 			  var{int x;
+			  string cs;
 			   int daas[3];
 			   }
 			}
 			struct structStart {
 			var{int ttt;}
 			}
+			int dog[5];
 			}
 	   read(naoDeclarada);
 	   print(naoDeclarada);
 	   global.naoDeclarada = j;
 	   global.naoDeclarada = 3;
+	   global.naoDeclarada = "dsd";
+	   global.naoDeclarada = true;
+	   global.naoDeclarada = 3.14;
 	   
-	   structStart.daas[3] = j;
+	   structStart.daas[stringIndexArray] = j;
+	   dog[structStart.daas[j]] = stringIndexArray;
+	   structStart.daas[stringIndexArray] = "dsds";
+	   //global.log = show(2);
+	   show(j);
 	   
-        while( j == j){
+        while(j == j){
 		 
 		} 
 		
@@ -61,42 +64,38 @@ procedure start(int w){
 		}	
 	
 }
-procedure start(int x){
-var{ }
 
-}
 
-function int fnctsss(int t, string d){
-       var { int ggg;
-			 int vet[2];
-	     struct sctructxx{
-              var {int testaEscopo;}
-	     }
-		 
+function int show(int bad){
+var{int x;
+    int x;
+	string vd;
+	struct iron{
+	var{int inteiro;
+	string cdc;
 	}
-	   read(naoDeclarada);
-	   print(naoDeclarada);
-	   naoDeclarada = ggg;
-	   ggg = "dsds";
-	   
-	   
-        while( naoDeclarada == 5){
-		 
-		} 
-		
-		if(naoDeclarada == j)then{
-		 read(naoDeclarada);
-		
-		}else{
-		
-		}	
-	return global.log;
+	}
+	}
+	
+	bad = vd;
+	
+return retornoInt(vd);
 }
 
-function boolean funct2(boolean x, int aux, char t){
-var{ int tameImpala;}
-
-return true;
+function int retornoInt(int xc){
+var{}
+return 0;
 }
+
+function string fstring(string x){
+var{
+
+}
+return "fsdfds";
+}
+
+
+
+
 
 

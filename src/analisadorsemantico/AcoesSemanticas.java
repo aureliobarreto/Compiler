@@ -11,7 +11,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Stack;
@@ -32,9 +31,10 @@ public class AcoesSemanticas {
     HashMap<String, Object> tabSimbolos;
     Stack<String> escopo;
     String escopoTemp, typeConstTemp, idConstTemp, idStructTemp, typeFunctionTemp, modifierTemp, typeCallVar,
-            nameVarTemp;
+            nameAssign1Temp, nameAssign2Temp, typeIndexArrayTemp, nameIndexArrayTemp, paramFuncProcTemp,
+            nameProcFunctTemp, typeAssign1, typeAssign2, nameStructReturnTemp;
     ArrayList paramsStrTemporarios;
-    boolean inReturn, inCommands, isIndexArrayCheck;
+    boolean inReturn, inCommands, inIndexArrayCheck, inCallProcFunct, inAssign1, inAssign2;
 
     public AcoesSemanticas(ArrayList<Token> arrayDeTokens, int num, HashMap<String, Object> tabSimbolos) throws FileNotFoundException {
         pilhaTokens = new <Token>Stack();
@@ -46,13 +46,15 @@ public class AcoesSemanticas {
         this.escopo.push("global");
         this.inReturn = false;
         this.inCommands = false;
-        this.isIndexArrayCheck = false;
+        this.inIndexArrayCheck = false;
+        this.inCallProcFunct = false;
+        this.inAssign1 = false;
+        this.inAssign2 = false;
 
-       
     }
 
     public void run() throws IOException {
-        // passar array de tokens para a pilha       
+        // passar array de tokens para a pilha
         Iterator it = tokens.iterator();
         while (it.hasNext()) {
             Token t = (Token) it.next();
@@ -73,6 +75,18 @@ public class AcoesSemanticas {
      */
     private Token proximoToken() {
         return (pilhaTokens.isEmpty()) ? null : pilhaTokens.pop();
+    }
+
+    private Token lookAHead() {
+        Token tokenAux;
+        if (!pilhaTokens.isEmpty()) {
+            tokenAux = proximoToken();
+            pilhaTokens.push(tokenAux);
+            return tokenAux;
+        } else {
+            return null;
+        }
+
     }
 
     /**
@@ -247,7 +261,7 @@ public class AcoesSemanticas {
             Iterator it = fpTemp.getListVars().iterator();
             while (it.hasNext()) {
                 Object tmp = it.next();
-                
+
                 if (tmp instanceof Var) {
                     Var var = (Var) tmp;
                     if (var.getId().equals(id)) {
@@ -268,8 +282,8 @@ public class AcoesSemanticas {
                             return false;
                         }
                     }
-                } else if (tmp instanceof Composta) {                    
-                    Composta struct = (Composta) tmp;                    
+                } else if (tmp instanceof Composta) {
+                    Composta struct = (Composta) tmp;
                     if (struct.getId().equals(id)) {
                         if (struct.wasDeclared()) {
                             return true;
@@ -304,6 +318,123 @@ public class AcoesSemanticas {
                     }
                 }
             }
+        }
+        return false;
+    }
+
+    public String getTypeFunctProc(String id, String params) {
+        Object o = tabSimbolos.get("global");
+        if (o instanceof GlobalValues) {
+            Iterator it = ((GlobalValues) o).getVariaveis().iterator();
+            while (it.hasNext()) {
+                Object tmp = it.next();
+                if (tmp instanceof FunctionProcedure) {
+                    if (((FunctionProcedure) tmp).getId().equals(id)) {
+                        if (((FunctionProcedure) tmp).getTypesParams().equals(params)) {
+                            return ((FunctionProcedure) tmp).getType();
+
+                        }
+                    }
+                }
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Verifica se uma variavel esta contida em um determinado escopo
+     *
+     * @param id id da variavel a ser buscada
+     * @param escopo escopo a ser feito a varredura
+     * @return true para está contida e false para não esta contida
+     */
+    private boolean Contains(String id, String escopo) {
+
+        Object o = tabSimbolos.get(escopo);
+        if (o instanceof GlobalValues) {
+            GlobalValues x = (GlobalValues) o;
+            Iterator it = x.getVariaveis().iterator();
+
+            while (it.hasNext()) {
+                Object tmp = it.next();
+
+                if (tmp instanceof Const) {
+                    Const constante = (Const) tmp;
+                    if (constante.getId().equals(id)) {
+                        return true;
+                    }
+                } else if (tmp instanceof Var) {
+                    Var var = (Var) tmp;
+                    if (var.getId().equals(id)) {
+                        return true;
+                    }
+                } else if (tmp instanceof Array) {
+                    Array array = (Array) tmp;
+                    if (array.getId().equals(id)) {
+                        return true;
+                    }
+                } else if (tmp instanceof Composta) {
+                    Composta struct = (Composta) tmp;
+                    if (struct.getId().equals(id)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+
+        } else if (o instanceof Composta) {
+            Composta composta = (Composta) o;
+            Iterator it = composta.getListVars().iterator();
+            while (it.hasNext()) {
+                Object tmp = it.next();
+
+                if (tmp instanceof Const) {
+                    Const constante = (Const) tmp;
+                    if (constante.getId().equals(id)) {
+                        return true;
+                    }
+                } else if (tmp instanceof Var) {
+                    Var var = (Var) tmp;
+                    if (var.getId().equals(id)) {
+                        return true;
+                    }
+                } else if (tmp instanceof Array) {
+                    Array array = (Array) tmp;
+                    if (array.getId().equals(id)) {
+                        return true;
+                    }
+                } else if (tmp instanceof Composta) {
+                    Composta struct = (Composta) tmp;
+                    if (struct.getId().equals(id)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } else if (o instanceof FunctionProcedure) {
+            FunctionProcedure fpTemp = (FunctionProcedure) o;
+            Iterator it = fpTemp.getListVars().iterator();
+            while (it.hasNext()) {
+                Object tmp = it.next();
+
+                if (tmp instanceof Var) {
+                    Var var = (Var) tmp;
+                    if (var.getId().equals(id)) {
+                        return true;
+                    }
+                } else if (tmp instanceof Array) {
+                    Array array = (Array) tmp;
+                    if (array.getId().equals(id)) {
+                        return true;
+                    }
+                } else if (tmp instanceof Composta) {
+                    Composta struct = (Composta) tmp;
+                    if (struct.getId().equals(id)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
         return false;
     }
@@ -688,7 +819,7 @@ public class AcoesSemanticas {
         functionsProcedures();
     }
 //********************** GLOBAL VALUES *****************************************************
-//                  DECLARAÇÃO DE VARIÁVEIS 
+//                  DECLARAÇÃO DE VARIÁVEIS
 
     private void globalValues() throws IOException {
         if (token == null) {
@@ -938,7 +1069,7 @@ public class AcoesSemanticas {
             ideStruct();
             varValuesDeclaration();
         } else if (token.getLexema().equals("}")) {
-            // vazio  
+            // vazio
         } else {
             //erro sintatico
 
@@ -958,7 +1089,7 @@ public class AcoesSemanticas {
             token = proximoToken();
             arrayVerification();
         } else {
-            //erro sintatico            
+            //erro sintatico
         }
     }
 //********** VAR MORE ATRIBUITION ***********************************************************************
@@ -971,12 +1102,12 @@ public class AcoesSemanticas {
             varValuesAtribuition();
             varMoreAtribuition();
         } else if (token.getLexema().equals(";")) {
-            // vazio           
+            // vazio
         } else {
             //erro sintatico
         }
     }
-//********** VAR ARRAY VERIFICATION *********************************************************************     
+//********** VAR ARRAY VERIFICATION *********************************************************************
 
     private void arrayVerification() throws IOException {
         if (token == null) {
@@ -1157,7 +1288,10 @@ public class AcoesSemanticas {
             if (token == null) {
                 //erro sintatico
                 return;
-            } else if (token.getTipo().equals("IDE")) {
+            } else if (token.getTipo().equals("IDE") || token.getLexema().equals("start")) {
+                if (token.getLexema().equals("start")) {
+                    setErro(token.getLinha(), "The function cannot contain the id start");
+                }
                 escopoTemp = token.getLexema();
                 token = proximoToken();
             } else {
@@ -1223,6 +1357,7 @@ public class AcoesSemanticas {
                 token = proximoToken();
                 commands();
                 returns();
+                inReturn = false;
 
             } else {
                 //erro sintatico
@@ -1259,8 +1394,10 @@ public class AcoesSemanticas {
                 paramList();
                 if (funcProcExists(escopoTemp, parametros(paramsStrTemporarios))) {
                     setErro(token.getLinha(), "The Procedure \"" + escopoTemp + "\" was already been declared in the Scope: " + escopo.peek());
+                } else {
+                    escopo.push(escopoTemp + parametros(paramsStrTemporarios));
                 }
-                escopo.push(escopoTemp + parametros(paramsStrTemporarios));
+
             } else {
                 //erro sintatico
             }
@@ -1341,7 +1478,7 @@ public class AcoesSemanticas {
                 token = proximoToken();
                 moreParam();
             } else {
-                //erro sintatico   
+                //erro sintatico
             }
         } else if (token.getLexema().equals(")")) {
             // vazio
@@ -1384,8 +1521,25 @@ public class AcoesSemanticas {
             printStatemant();
             commands();
         } else if (token.getTipo().equals("IDE") || token.getLexema().equals("local") || token.getLexema().equals("global")) {
-            assignment();
-            commands();
+            Token aux = lookAHead();
+            if (aux.getLexema().equals("(")) {
+                inCommands = true;
+                callProcedureFunction();
+                inCommands = false;
+                if (token == null) {
+                    //erro sintático
+                    return;
+                } else if (token.getLexema().equals(";")) {
+                    token = proximoToken();
+                } else {
+                    //erro sintático
+                }
+                commands();
+            } else {
+                assignment();
+                commands();
+            }
+
         } else if (token.getLexema().equals("}") || token.getLexema().equals("return")) {
             //vazio
         }
@@ -1415,19 +1569,34 @@ public class AcoesSemanticas {
                 return;
             } else if (token.getLexema().equals("true") || token.getLexema().equals("false") || token.getTipo().equals("NRO")
                     || token.getTipo().equals("CDC")) {
-                if (!checkType(typeFunctionTemp, token)) {
+                String ret = "";
+                if (token.getLexema().equals("true") || token.getLexema().equals("false")) {
+                    ret = "boolean";
+                } else if (token.getTipo().equals("CDC")) {
+                    ret = "string";
+                } else if (token.getTipo().equals("NRO")) {
+                    if (intVerification(token.getLexema())) {
+                        ret = "int";
+                    } else {
+                        ret = "real";
+                    }
+                }
+
+                if (!ret.equals(typeFunctionTemp)) {
                     setErro(token.getLinha(), "Return type of Function \"" + escopoTemp + "\" does not match");
                 }
                 token = proximoToken();
+
             } else if (token.getTipo().equals("IDE")) {
-                if (Exist(token.getLexema(), escopo.peek())) {
-                    if (!checkReturnType(typeFunctionTemp, escopo.peek(), token.getLexema())) {
-                        setErro(token.getLinha(), "Return type of Function \"" + escopoTemp + "\" does not match");
-                    }
+
+                Token aux = lookAHead();
+                if (aux.getLexema().equals("(")) {
+                    inCallProcFunct = true;
+                    callProcedureFunction();
+                    inCallProcFunct = false;
                 } else {
-                    setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                    callVariable();
                 }
-                callVariable();
 
             } else if (token.getLexema().equals("global") || token.getLexema().equals("local")) {
                 callVariable();
@@ -1538,7 +1707,7 @@ public class AcoesSemanticas {
             }
 
         } else if (token.getLexema().equals("return") || token.getLexema().equals("}")) {
-            //vazio  
+            //vazio
         } else {
             //erro sintatico
         }
@@ -1736,18 +1905,27 @@ public class AcoesSemanticas {
 //*************** ASSIGNMENT **********************************************************************
 
     private void assignment() throws IOException {
+
         if (token == null) {
             //erro sintatico
             return;
         } else if (token.getTipo().equals("IDE") || token.getLexema().equals("local") || token.getLexema().equals("global")) {
-            inCommands = true;
+            inAssign1 = true;
             callVariable();
+            inAssign1 = false;
             if (token == null) {
                 //erro sintatico
                 return;
             } else if (token.getLexema().equals("=")) {
                 token = proximoToken();
+                inAssign2 = true;
                 assign2();
+                if (typeAssign1 != null) {
+                    if (!typeAssign1.equals(typeAssign2)) {
+                        setErro(token.getLinha(), "The types atribuition not match");
+                    }
+                }
+                inAssign2 = false;
             } else {
                 //erro sintatico
             }
@@ -1781,52 +1959,54 @@ public class AcoesSemanticas {
     }
 
     private void assign2() throws IOException {
-
+        //System.out.println(token.getLinha()+" - "+ inCommands +" - " + inCallProcFunct +" - " +inIndexArrayCheck );
         if (token == null) {
             //erro sintatico
             return;
-        } else if (token.getTipo().equals("IDE") || token.getLexema().equals("global") || token.getLexema().equals("local")) {
-            if (token.getTipo().equals("IDE")) {
-                if (Exist(token.getLexema(), escopo.peek())) {
+        } else if (token.getLexema().equals("global") || token.getLexema().equals("local")) {
+            callVariable();
+        } else if (token.getTipo().equals("CDC") || token.getLexema().equals("true") || token.getLexema().equals("false")
+                || token.getTipo().equals("NRO")) {
+
+            if (token.getTipo().equals("NRO")) {
+                if (typeAssign1 != null) {
+                    if (!checkType(typeAssign1, token)) {
+                        setErro(token.getLinha(), "The types atribuition not match");
+                    }
+                }
+            } else if (token.getTipo().equals("CDC")) {
+                if (typeAssign1 != null) {
+                    if (!typeAssign1.equals("string")) {
+                        setErro(token.getLinha(), "The types atribuition not match");
+                    }
+                }
+            } else if (token.getLexema().equals("true") || token.getLexema().equals("false")) {
+
+                if (typeAssign1 != null) {
+                    if (!typeAssign1.equals("boolean")) {
+                        setErro(token.getLinha(), "The types atribuition not match");
+                    }
+                }
+
+            }
+            token = proximoToken();
+        } else if (token.getTipo().equals("IDE") || token.getLexema().equals("start")) {
+            Token aux = lookAHead();
+            if (aux.getLexema().equals("(")) {
+                inCallProcFunct = true;
+                callProcedureFunction();
+            } else {
+                callVariable();
+            }
+            // VERIFICAÇÃO DE EXISTENCIA DE FUNÇÕES E PROCEDIMENTOS
+            /*if (Exist(token.getLexema(), escopo.peek())) {
                     if (!getTypeVar(token.getLexema(), escopo.peek()).equals(typeCallVar)) {
                         setErro(token.getLinha(), "The types atribuition not match");
                     }
                 } else {
                     setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
-                }
-            }
-            token = proximoToken();
-        } else if (token.getTipo().equals("CDC")) {
-            if (typeCallVar == null) {
+                } */
 
-            } else {
-                if (!typeCallVar.equals("string")) {
-                    setErro(token.getLinha(), "The types atribuition not match");
-                }
-            }
-            token = proximoToken();
-        } else if (token.getTipo().equals("IDE") || token.getLexema().equals("++") || token.getLexema().equals("--")
-                || token.getLexema().equals("true") || token.getLexema().equals("false")
-                || token.getLexema().equals("!")) {
-            if (token.getLexema().equals("true") || token.getLexema().equals("false")) {
-                if (typeCallVar == null) {
-
-                } else {
-                    if (!typeCallVar.equals("boolean")) {
-                        setErro(token.getLinha(), "The types atribuition not match");
-                    }
-                }
-            }
-            expression();
-        } else if (token.getTipo().equals("NRO")) {
-            if (typeCallVar == null) {
-
-            } else {
-                if (!checkType(typeCallVar, token)) {
-                    setErro(token.getLinha(), "The types atribuition not match");
-                }
-            }
-            token = proximoToken();
         } else {
             //erro sintatico
         }
@@ -1843,7 +2023,7 @@ public class AcoesSemanticas {
 
     }
 
-//*************** RELATIONAL EXPRESSION ***********************************************************    
+//*************** RELATIONAL EXPRESSION ***********************************************************
     private void relationalExp() throws IOException {
         if (token == null) {
             //erro sintatico
@@ -1866,7 +2046,7 @@ public class AcoesSemanticas {
         }
     }
 
-//*************** OPT LOGICAL EXPRESSION ***********************************************************   
+//*************** OPT LOGICAL EXPRESSION ***********************************************************
     private void optLogicalExp() throws IOException {
         if (token == null) {
             //erro sintatico
@@ -1875,13 +2055,13 @@ public class AcoesSemanticas {
             token = proximoToken();
             logicalExp();
         } else if (token.getLexema().equals(")")) {
-            //vazio  
+            //vazio
         } else {
             //erro sintatico
         }
     }
 
-//*************** LOGICAL EXPRESSION ***************************************************************     
+//*************** LOGICAL EXPRESSION ***************************************************************
     private void logicalExp() throws IOException {
         if (token == null) {
             //erro sintatico
@@ -1907,7 +2087,7 @@ public class AcoesSemanticas {
             aritmeticExp();
             inequalityExp();
             equalityExp();
- 
+
         } else {
             //erro sintatico
         }
@@ -2000,7 +2180,7 @@ public class AcoesSemanticas {
                 || token.getLexema().equals(">") || token.getLexema().equals("<") || token.getLexema().equals(">=")
                 || token.getLexema().equals("<=") || token.getLexema().equals(")") || token.getLexema().equals(";")) {
 
-            //vazio           
+            //vazio
         } else {
             //erro sintatico
         }
@@ -2127,37 +2307,102 @@ public class AcoesSemanticas {
                     //erro sintatico
                     return;
                 } else if (token.getTipo().equals("IDE")) {
+                    if (inAssign1) {
+                        if (modifierTemp.equals("global")) {
+                            if (!Contains(token.getLexema(), "global")) {
+                                setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                            } else {
+                                Token aux = lookAHead();
+                                if (aux.getLexema().equals(".")) {
+                                    nameAssign1Temp = token.getLexema();
+                                } else {
+                                    typeAssign1 = getTypeVar(token.getLexema(), "global");
+                                }
+                            }
+                        } else if (modifierTemp.equals("local")) {
+                            if (!Contains(token.getLexema(), escopo.peek())) {
+                                setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                            } else {
+                                Token aux = lookAHead();
+                                if (aux.getLexema().equals(".")) {
+                                    nameAssign1Temp = token.getLexema();
+                                } else {
+                                    typeAssign1 = getTypeVar(token.getLexema(), escopo.peek());
+                                }
+                            }
+                        }
+                    }
+
+                    if (inAssign2) {
+                        if (modifierTemp.equals("global")) {
+                            if (!Contains(token.getLexema(), "global")) {
+                                setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                            } else {
+                                Token aux = lookAHead();
+                                if (aux.getLexema().equals(".")) {
+                                    nameAssign2Temp = token.getLexema();
+                                } else {
+                                    typeAssign2 = getTypeVar(token.getLexema(), "global");
+                                }
+                            }
+                        } else if (modifierTemp.equals("local")) {
+                            if (!Contains(token.getLexema(), escopo.peek())) {
+                                setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                            } else {
+                                Token aux = lookAHead();
+                                if (aux.getLexema().equals(".")) {
+                                    nameAssign2Temp = token.getLexema();
+                                } else {
+                                    typeAssign2 = getTypeVar(token.getLexema(), escopo.peek());
+                                }
+                            }
+                        }
+                    }
 
                     if (inReturn) {
                         if (modifierTemp.equals("global")) {
-                            if (Exist(token.getLexema(), "global")) {
-                                if (!checkReturnType(typeFunctionTemp, "global", token.getLexema())) {
-                                    setErro(token.getLinha(), "Return type of Function \"" + escopoTemp + "\" does not match");
+                            if (Contains(token.getLexema(), "global")) {
+                                Token aux = lookAHead();
+                                if (aux.getLexema().equals(".")) {
+                                    nameStructReturnTemp = token.getLexema();
+                                } else {
+
+                                    if (!typeFunctionTemp.equals(getTypeVar(token.getLexema(), "global"))) {
+                                        setErro(token.getLinha(), "Return type of Function \"" + escopoTemp + "\" does not match");
+                                    }
                                 }
+
                             } else {
                                 setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
                             }
                         } else if (modifierTemp.equals("local")) {
-                            if (Exist(token.getLexema(), escopo.peek())) {
-                                if (!checkReturnType(typeFunctionTemp, escopo.peek(), token.getLexema())) {
-                                    setErro(token.getLinha(), "Return type of Function \"" + escopoTemp + "\" does not match");
+                            if (Contains(token.getLexema(), escopo.peek())) {
+                                Token aux = lookAHead();
+                                if (aux.getLexema().equals(".")) {
+                                    nameStructReturnTemp = token.getLexema();
+                                } else {
+
+                                    if (!typeFunctionTemp.equals(getTypeVar(token.getLexema(), escopo.peek()))) {
+                                        setErro(token.getLinha(), "Return type of Function \"" + escopoTemp + "\" does not match");
+                                    }
                                 }
+
                             } else {
                                 setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
                             }
                         }
-                        inReturn = false;
+
                     }
 
                     if (inCommands) {
                         if (modifierTemp.equals("global")) {
-                            if (!Exist(token.getLexema(), "global")) {
+                            if (!Contains(token.getLexema(), "global")) {
                                 setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
                             } else {
                                 typeCallVar = getTypeVar(token.getLexema(), "global");
                             }
                         } else if (modifierTemp.equals("local")) {
-                            if (!Exist(token.getLexema(), escopo.peek())) {
+                            if (!Contains(token.getLexema(), escopo.peek())) {
                                 setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
                             } else {
                                 typeCallVar = getTypeVar(token.getLexema(), escopo.peek());
@@ -2166,18 +2411,18 @@ public class AcoesSemanticas {
                         inCommands = false;
                     }
 
-                    if (isIndexArrayCheck) {
+                    if (inIndexArrayCheck) {
                         if (modifierTemp.equals("global")) {
-                            if (!Exist(token.getLexema(), "global")) {
+                            if (!Contains(token.getLexema(), "global")) {
                                 setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
                             } else {
-                                typeCallVar = getTypeVar(token.getLexema(), "global");
-                                if (!typeCallVar.equals("int")) {
+                                typeIndexArrayTemp = getTypeVar(token.getLexema(), "global");
+                                if (!typeIndexArrayTemp.equals("int")) {
                                     setErro(token.getLinha(), "The array index is not an integer type");
                                 }
                             }
                         } else if (modifierTemp.equals("local")) {
-                            if (!Exist(token.getLexema(), escopo.peek())) {
+                            if (!Contains(token.getLexema(), escopo.peek())) {
                                 setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
                             } else {
                                 typeCallVar = getTypeVar(token.getLexema(), escopo.peek());
@@ -2189,30 +2434,130 @@ public class AcoesSemanticas {
                         //isIndexArrayCheck = false;
                     }
 
+                    if (inCallProcFunct) {
+
+                        if (modifierTemp.equals("global")) {
+                            if (Contains(token.getLexema(), "global")) {
+                                paramFuncProcTemp = getTypeVar(token.getLexema(), "global");
+                                Token aux = lookAHead();
+                                if (aux.getLexema().equals(".")) {
+                                    paramFuncProcTemp = getTypeVar(token.getLexema(), "global");
+                                } else {
+                                    paramsStrTemporarios.add("@" + getTypeVar(token.getLexema(), "global"));
+                                }
+                            } else {
+                                setErro(token.getLinha(), "The var \"" + token.getLexema() + "\" was not declared");
+                            }
+                        } else if (modifierTemp.equals("local")) {
+                            if (Contains(token.getLexema(), escopo.peek())) {
+                                Token aux = lookAHead();
+                                if (aux.getLexema().equals(".")) {
+                                    paramFuncProcTemp = getTypeVar(token.getLexema(), escopo.peek());
+                                } else {
+                                    paramsStrTemporarios.add("@" + getTypeVar(token.getLexema(), escopo.peek()));
+                                }
+                            } else {
+                                setErro(token.getLinha(), "The var \"" + token.getLexema() + "\" was not declared");
+                            }
+                        }
+
+                    }
+
                     token = proximoToken();
                 }
             }
 
         } else if (token.getTipo().equals("IDE")) {
+            if (inAssign1) {
+                if (!Contains(token.getLexema(), escopo.peek())) {
+                    setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                } else {
+                    Token aux = lookAHead();
+                    if (aux.getLexema().equals(".")) {
+                        nameAssign1Temp = token.getLexema();
+                    } else {
+                        typeAssign1 = getTypeVar(token.getLexema(), escopo.peek());
+                    }
+
+                }
+            }
+
+            if (inAssign2) {
+                if (!Contains(token.getLexema(), escopo.peek())) {
+                    setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                } else {
+                    Token aux = lookAHead();
+                    if (aux.getLexema().equals(".")) {
+                        nameAssign2Temp = token.getLexema();
+                    } else {
+                        typeAssign2 = getTypeVar(token.getLexema(), escopo.peek());
+
+                    }
+                }
+            }
            
+            if (inReturn) {
+                if (Contains(token.getLexema(), escopo.peek())) {
+                    Token aux = lookAHead();
+                    if (aux.getLexema().equals(".")) {
+                        nameStructReturnTemp = token.getLexema();
+                    } else {                        
+                        if (!typeFunctionTemp.equals(getTypeVar(token.getLexema(), escopo.peek()))) {
+                            setErro(token.getLinha(), "Return type of Function \"" + escopoTemp + "\" does not match");
+                        }
+                    }
+
+                } else {
+                    setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                }
+
+            }
+
+            // print e read
             if (inCommands) {
-                if (!Exist(token.getLexema(), escopo.peek())) {
+                if (!Contains(token.getLexema(), escopo.peek())) {// não podeee esse método é só pra declaração
                     setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
                 } else {
                     typeCallVar = getTypeVar(token.getLexema(), escopo.peek());
+                    typeAssign1 = typeCallVar;
                 }
                 inCommands = false;
             }
 
-            if (isIndexArrayCheck) {
-                typeCallVar = getTypeVar(token.getLexema(), escopo.peek());
-                if (!typeCallVar.equals("int")) {
-                    setErro(token.getLinha(), "The array index is not an integer type");
+            if (inIndexArrayCheck) {
+                if (Contains(token.getLexema(), escopo.peek())) {
+                    Token aux = lookAHead();
+                    if (aux.getLexema().equals(".")) {
+                        nameIndexArrayTemp = token.getLexema();
+                    } else {
+                        typeIndexArrayTemp = getTypeVar(token.getLexema(), escopo.peek());
+                        inIndexArrayCheck = false;
+                        if (!typeIndexArrayTemp.equals("int")) {
+                            setErro(token.getLinha(), "The array index is not an integer type");
+                        }
+                    }
+                } else {
+                    setErro(token.getLinha(), "The var \"" + token.getLexema() + "\" was not declared");
                 }
 
             }
 
-            nameVarTemp = token.getLexema();
+            if (inCallProcFunct) {
+
+                if (Contains(token.getLexema(), escopo.peek())) {
+                    Token aux = lookAHead();
+                    if (aux.getLexema().equals(".")) {
+                        // é name var
+                        //paramFuncProcTemp = getTypeVar(token.getLexema(), escopo.peek());
+                    } else {
+                        paramsStrTemporarios.add("@" + getTypeVar(token.getLexema(), escopo.peek()));
+                    }
+                } else {
+                    setErro(token.getLinha(), "The var \"" + token.getLexema() + "\" was not declared");
+                }
+            }
+
+            nameAssign1Temp = token.getLexema();
             token = proximoToken();
         }
     }
@@ -2228,6 +2573,7 @@ public class AcoesSemanticas {
         } else if (token.getLexema().equals(",") || token.getLexema().equals("=") || token.getLexema().equals("++")
                 || token.getLexema().equals("--") || token.getLexema().equals(";") || token.getLexema().equals("]")
                 || token.getLexema().equals(")") || token.getLexema().equals("*") || token.getLexema().equals("/")) {
+
             //vazio
         } else {
             //erro sintatico
@@ -2249,15 +2595,49 @@ public class AcoesSemanticas {
             //erro sintatico
             return;
         } else if (token.getTipo().equals("IDE")) {
-            if (!existInStruct(token.getLexema(), nameVarTemp, escopo.peek())) {
-                setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
-            } else {
-                typeCallVar = getTypeVarInStruct(token.getLexema(), nameVarTemp, escopo.peek());
-                if (isIndexArrayCheck) {
-                    if (!typeCallVar.equals("int")) {
-                        setErro(token.getLinha(), "The array index is not an integer type");
+            if (inAssign1) {
+                if (!existInStruct(token.getLexema(), nameAssign1Temp, escopo.peek())) {
+                    setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                } else {
+                    typeAssign1 = getTypeVarInStruct(token.getLexema(), nameAssign1Temp, escopo.peek());
+
+                    if (inIndexArrayCheck) {
+
+                        if (!typeAssign1.equals("int")) {
+                            setErro(token.getLinha(), "The array index is not an integer type");
+                        }
+                        inIndexArrayCheck = false;
                     }
-                    isIndexArrayCheck = false;
+
+                }
+            }
+
+            if (inAssign2) {
+                if (!existInStruct(token.getLexema(), nameAssign2Temp, escopo.peek())) {
+                    setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                } else {
+                    typeAssign2 = getTypeVarInStruct(token.getLexema(), nameAssign2Temp, escopo.peek());
+
+                    if (inIndexArrayCheck) {
+                        if (!typeAssign2.equals("int")) {
+                            setErro(token.getLinha(), "The array index is not an integer type");
+                        }
+                        inIndexArrayCheck = false;
+                    }
+
+                    if (inCallProcFunct) {
+                        paramsStrTemporarios.add("@" + typeAssign2);
+                    }
+                }
+            }
+            if (inReturn) {
+                if (!existInStruct(token.getLexema(), nameStructReturnTemp, escopo.peek())) {
+                    setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                } else {
+                    if (!typeFunctionTemp.equals(getTypeVarInStruct(token.getLexema(), nameStructReturnTemp, escopo.peek()))) {
+                        setErro(token.getLinha(), "Return type of Function \"" + escopoTemp + "\" does not match");
+                    }
+
                 }
             }
             token = proximoToken();
@@ -2282,7 +2662,7 @@ public class AcoesSemanticas {
                 }
                 token = proximoToken();
             } else if (token.getLexema().equals("global") || token.getLexema().equals("local") || token.getTipo().equals("IDE")) {
-                isIndexArrayCheck = true;
+                inIndexArrayCheck = true;
                 callVariable();
             } else {
                 //erro sintatico
@@ -2307,14 +2687,52 @@ public class AcoesSemanticas {
         if (token == null) {
             //erro sintatico
             return;
-        } else if (token.getTipo().equals("IDE")) {
+        } else if (token.getTipo().equals("IDE") || token.getLexema().equals("start")) {
+            nameProcFunctTemp = token.getLexema();
             token = proximoToken();
             if (token == null) {
                 //erro sintatico
                 return;
             } else if (token.getLexema().equals("(")) {
                 token = proximoToken();
+                paramsStrTemporarios = new ArrayList();
                 realParamList();
+                if (inCallProcFunct) {
+                    if (!tabSimbolos.containsKey(nameProcFunctTemp + parametros(paramsStrTemporarios))) {
+                        setErro(token.getLinha(), "Function \"" + nameProcFunctTemp + parametros(paramsStrTemporarios) + "\" was not declared");
+                    } else {
+                        String typeF = getTypeFunctProc(nameProcFunctTemp, parametros(paramsStrTemporarios));
+                        if (typeF.equals("")) {
+                            setErro(token.getLinha(), "Procedure cannot be called in atribuition");
+                            inCallProcFunct = false;
+                        } else {
+
+                            if (!typeAssign1.equals(typeF)) {
+                                setErro(token.getLinha(), "The function return is not of the type " + typeAssign1);
+                                inCallProcFunct = false;
+                            } else {
+                                typeAssign2 = typeF;
+                            }
+
+                        }
+                    }
+                }
+                
+                if (inReturn) {
+                    if (!tabSimbolos.containsKey(nameProcFunctTemp + parametros(paramsStrTemporarios))) {
+                        setErro(token.getLinha(), "Function \"" + nameProcFunctTemp + parametros(paramsStrTemporarios) + "\" was not declared");
+                    } else {
+                        String typeF = getTypeFunctProc(nameProcFunctTemp, parametros(paramsStrTemporarios));
+                        if (typeF.equals("")) {
+                            setErro(token.getLinha(), "Procedure cannot be called in return");
+
+                        } else {
+                            if (!typeAssign1.equals(typeF)) {
+                                setErro(token.getLinha(), "The function return is not of the type " + typeFunctionTemp);
+                            }
+                        }
+                    }
+                }
             } else {
                 //erro sintatico
             }
@@ -2333,6 +2751,7 @@ public class AcoesSemanticas {
     }
 
     private void realParamList() throws IOException {
+
         if (token == null) {
             //erro sintatico
             return;
@@ -2343,7 +2762,7 @@ public class AcoesSemanticas {
             moreRealParam();
 
         } else if (token.getLexema().equals(")")) {
-            //vazio           
+            //vazio
         } else {
             //erro sintatico
         }
@@ -2357,6 +2776,7 @@ public class AcoesSemanticas {
                 || token.getTipo().equals("CDC")) {
             valueParam();
         } else if (token.getTipo().equals("IDE") || token.getLexema().equals("global") || token.getLexema().equals("local")) {
+
             callVariable();
         } else {
             setErro("");
@@ -2391,10 +2811,17 @@ public class AcoesSemanticas {
             //erro sintatico
             return;
         } else if (token.getTipo().equals("NRO")) {
+            if (intVerification(token.getLexema())) {
+                paramsStrTemporarios.add("@int");
+            } else {
+                paramsStrTemporarios.add("@real");
+            }
             token = proximoToken();
         } else if (token.getTipo().equals("CDC")) {
+            paramsStrTemporarios.add("@string");
             token = proximoToken();
         } else if (token.getLexema().equals("true") || token.getLexema().equals("false")) {
+            paramsStrTemporarios.add("@boolean");
             token = proximoToken();
         } else {
             //erro sintatico

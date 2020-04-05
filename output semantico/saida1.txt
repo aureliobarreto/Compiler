@@ -9,15 +9,21 @@ Line 17 semantic error: The Var "matriz" was already been declared in the scope:
 Line 17 semantic error: The array index is not an integer type
 Line 18 semantic error: In the parent struct there is already a variable with the name "j"
 Line 20 semantic error: The struct "cleitonRasta" was not declared
-<<<<<<< HEAD
-Line 27 semantic error: In the parent struct there is already a variable with the name "i"
-=======
-Line 27 semantic error: The Var "j" was already been declared in the scope: start@int
-Line 34 semantic error: The Struct "structStart" was already been declared in the scope: start@int
-Line 40 semantic error: The Var "naoDeclarada" was not declared
-Line 40 semantic error: The types atribuition not match
+Line 28 semantic error: The Var "j" was already been declared in the scope: start
+Line 36 semantic error: The Struct "structStart" was already been declared in the scope: start
 Line 41 semantic error: The Var "naoDeclarada" was not declared
-Line 57 semantic error: The Procedure "start" was already been declared in the Scope: global
-Line 72 semantic error: The Var "naoDeclarada" was not declared
-Line 73 semantic error: The types atribuition not match
->>>>>>> ae2c560ea4f1cf25196a51ecebe3e6a94f6431c4
+Line 42 semantic error: The Var "naoDeclarada" was not declared
+Line 43 semantic error: The Var "naoDeclarada" was not declared
+Line 44 semantic error: The Var "naoDeclarada" was not declared
+Line 45 semantic error: The Var "naoDeclarada" was not declared
+Line 46 semantic error: The Var "naoDeclarada" was not declared
+Line 47 semantic error: The Var "naoDeclarada" was not declared
+Line 49 semantic error: The array index is not an integer type
+Line 49 semantic error: The types atribuition not match
+Line 50 semantic error: The types atribuition not match
+Line 51 semantic error: The array index is not an integer type
+Line 70 semantic error: The Var "x" was already been declared in the scope: show@int
+Line 79 semantic error: The types atribuition not match
+Line 81 semantic error: Return type of Function "show" does not match
+Line 81 semantic error: Function "retornoInt@string" was not declared
+Line 81 semantic error: Function "retornoInt@string" was not declared
