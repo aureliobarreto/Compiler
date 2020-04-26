@@ -1,0 +1,3 @@
+Line 27 semantic error: The types atribuition not match
+Line 28 semantic error: The types atribuition not match
+Line 31 semantic error: The types atribuition not match

@@ -1,0 +1,66 @@
+const { real a = 1.4;
+		string const = "dd";
+		int dd = 1;}
+
+var {
+	int sab;
+     struct aluno{
+		var{
+			real oe;
+			string t;
+			string muidao[20];
+			int simaria;
+			int simone[20];
+		  }
+		}
+		
+	    aluno obj;
+  }
+
+procedure imprimir (string msg) {
+	var { }
+}
+
+function real calcula (real x, real j) {
+	var {
+		string msg1, msg2;
+		real resultado;
+	}
+	imprimir(msg1, msg2);  		// erro01: parametros incorretos
+	return local.resultado;
+}
+
+function real calcula_aumento_bolsa (real bolsa, real juros) {
+	var {
+		real valor; 
+	}	
+	return local.valor;
+}
+
+procedure start ( ) {
+	var {
+		real novo_valor, valor_bolsa, tx_juros, resultado;
+		int quantidade;
+		string arrayStr[20];
+		string teste;
+		real valor[4];
+		int arrayInt[20];
+		aluno aluno2;
+		struct das{
+			var{int ade;
+				real bn;
+				string dada;}
+		}
+	}
+	imprimir(arrayStr[global.aluno.simone[1]]);
+	imprimir(teste);
+
+	// param 1					    //param 2
+	local.resultado = calcula_aumento_bolsa(local.valor_bolsa, valor[arrayInt[global.obj.simaria]]);
+
+	local.resultado = calcula_aumento_bolsa(local.valor_bolsa); 		 // erro02: parametros incorretos
+	
+	local.resultado = calcula_aumento_bolsa(local.quantidade, local.tx_juros); // erro03: parametros incorretos
+	
+	local.resultado = calcula_aumento(local.valor_bolsa, local.tx_juros); 	 // erro04: id nao declaradolocal.
+}

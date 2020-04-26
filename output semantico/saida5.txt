@@ -1,0 +1,3 @@
+Line 14 semantic error: It is not possible to assign value to a CONSTANT
+Line 15 semantic error: It is not possible to assign value to a CONSTANT
+Line 16 semantic error: It is not possible to assign value to a CONSTANT

@@ -1,0 +1,4 @@
+Line 29 semantic error: Function "imprimir@string@string" was not declared
+Line 59 semantic error: Function "calcula_aumento_bolsa@real" was not declared
+Line 60 semantic error: Function "calcula_aumento_bolsa@int@real" was not declared
+Line 61 semantic error: Function "calcula_aumento@real@real" was not declared

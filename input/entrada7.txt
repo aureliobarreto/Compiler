@@ -1,0 +1,44 @@
+const {
+	int a = 10, d = 20;
+	real b = 22.2;
+	string c = "teste tipo";
+}
+
+var { string dd[20];
+
+	struct out{
+			var{
+			string cq[32];
+			int az;
+			int k[2];
+			}
+			
+	}
+	
+	}
+
+function real somar (real x, real y) {
+	var { real result; }
+		
+	//local.result = local.x + local.y + global.a;  // erro01: tipos incompativeis
+			
+	return local.result;
+}	
+
+function string imprimir (string msg) {
+	var { int b;
+		string tt;
+		struct aluno{
+			var{ string x;
+				int l;}
+		}
+		}						
+	
+	tt = global.out.cq[b];  	 // erro02: tipos incompativeis 
+		
+	return imprimir(global.out.cq[b]);    // erro03: tipos incompativeis 
+}
+
+procedure start ( ) { 
+	var { }	
+}

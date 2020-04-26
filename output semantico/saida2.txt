@@ -1,0 +1,3 @@
+Line 12 semantic error: The Var "max4" was already been declared in the scope: teste
+Line 13 semantic error: The Var "msg2" was already been declared in the scope: teste
+Line 14 semantic error: The Var "flag" was already been declared in the scope: teste

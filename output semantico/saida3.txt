@@ -1,0 +1,4 @@
+Line 16 semantic error: The Procedure "teste" was already been declared in the Scope: global
+Line 37 semantic error: The Function "soma" was already been declared in the Scope: global
+Line 37 semantic error: The Var "resultado" was already been declared in the scope: soma@real@real
+Line 42 semantic error: The Procedure "start" was already been declared in the Scope: global

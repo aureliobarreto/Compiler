@@ -1,29 +1,5 @@
-Line 2 semantic error: The value of const "ea" does not match the type
-Line 5 semantic error: The Const "ea" was already been declared in the scope: global
-Line 6 semantic error: The Const "rr" was already been declared in the scope: global
-Line 12 semantic error: The Var "BLZ" was already been declared in the scope: global
-Line 14 semantic error: The Var "aux" was already been declared in the scope: global
-Line 16 semantic error: The Var "array" was already been declared in the scope: global
-Line 16 semantic error: The array index is not an integer type
-Line 17 semantic error: The Var "matriz" was already been declared in the scope: global
-Line 17 semantic error: The array index is not an integer type
-Line 18 semantic error: In the parent struct there is already a variable with the name "j"
-Line 20 semantic error: The struct "cleitonRasta" was not declared
-Line 28 semantic error: The Var "j" was already been declared in the scope: start
-Line 36 semantic error: The Struct "structStart" was already been declared in the scope: start
-Line 41 semantic error: The Var "naoDeclarada" was not declared
-Line 42 semantic error: The Var "naoDeclarada" was not declared
-Line 43 semantic error: The Var "naoDeclarada" was not declared
-Line 44 semantic error: The Var "naoDeclarada" was not declared
-Line 45 semantic error: The Var "naoDeclarada" was not declared
-Line 46 semantic error: The Var "naoDeclarada" was not declared
-Line 47 semantic error: The Var "naoDeclarada" was not declared
-Line 49 semantic error: The array index is not an integer type
-Line 49 semantic error: The types atribuition not match
-Line 50 semantic error: The types atribuition not match
-Line 51 semantic error: The array index is not an integer type
-Line 70 semantic error: The Var "x" was already been declared in the scope: show@int
-Line 79 semantic error: The types atribuition not match
-Line 81 semantic error: Return type of Function "show" does not match
-Line 81 semantic error: Function "retornoInt@string" was not declared
-Line 81 semantic error: Function "retornoInt@string" was not declared
+Line 8 semantic error: The Const "max2" was already been declared in the scope: global
+Line 9 semantic error: The Const "msg1" was already been declared in the scope: global
+Line 18 semantic error: The Var "max4" was already been declared in the scope: global
+Line 19 semantic error: The Var "msg2" was already been declared in the scope: global
+Line 35 semantic error: In the parent struct there is already a variable with the name "nome"

@@ -518,8 +518,12 @@ public class Parser {
         if (token == null) {
             setErro(" Type expected");
             return;
-        } else if (isType(token)) {
-            typeVar = token.getLexema();
+        } else if (isType(token) || token.getTipo().equals("IDE")) {
+            if(token.getTipo().equals("IDE")){
+              typeVar = "struct";  
+            }else{
+              typeVar = token.getLexema();  
+            }            
             token = proximoToken();
             varValuesAtribuition();
             varTemporarias.add(varTemp);
