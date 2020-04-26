@@ -28,15 +28,16 @@ function real somar (real x, real y) {
 function string imprimir (string msg) {
 	var { int b;
 		string tt;
+		string t2[5];
 		struct aluno{
 			var{ string x;
 				int l;}
 		}
 		}						
 	
-	tt = global.out.cq[b];  	 // erro02: tipos incompativeis 
+	tt = t2[global.out.az];	 // erro02: tipos incompativeis
 		
-	return imprimir(global.out.cq[b]);    // erro03: tipos incompativeis 
+	return t2[local.aluno.l];    // erro03: tipos incompativeis 
 }
 
 procedure start ( ) { 

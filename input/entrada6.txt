@@ -54,9 +54,10 @@ procedure start ( ) {
 	}
 	imprimir(arrayStr[global.aluno.simone[1]]);
 	imprimir(teste);
+	arrayStr[global.obj.simone[global.dd]] = global.obj.muidao[global.obj.simone[77]];
 
 	// param 1					    //param 2
-	local.resultado = calcula_aumento_bolsa(local.valor_bolsa, valor[arrayInt[global.obj.simaria]]);
+	local.resultado = calcula_aumento_bolsa(valor_bolsa, valor[arrayInt[global.obj.simaria]]);
 
 	local.resultado = calcula_aumento_bolsa(local.valor_bolsa); 		 // erro02: parametros incorretos
 	

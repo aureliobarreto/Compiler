@@ -74,13 +74,15 @@ public class AcoesSemanticas {
 
     /**
      * Método que devolve o proximo token a ser verificado
-     *
      * @return Token a ser verificado
      */
     private Token proximoToken() {
         return (pilhaTokens.isEmpty()) ? null : pilhaTokens.pop();
     }
-
+    /**
+     * Método que olha o próximo token
+     * @return Proximo Token
+     */    
     private Token lookAHead() {
         Token tokenAux;
         if (!pilhaTokens.isEmpty()) {
@@ -302,7 +304,12 @@ public class AcoesSemanticas {
         }
         return false;
     }
-
+    /**
+     * Método que verifica se uma função ou procedimento existe
+     * @param id nome da função
+     * @param params string concatenada com seus parâmetros
+     * @return true: existe, false; não existe
+     */
     public boolean funcProcExists(String id, String params) {
         Object o = tabSimbolos.get("global");
         if (o instanceof GlobalValues) {
@@ -325,7 +332,12 @@ public class AcoesSemanticas {
         }
         return false;
     }
-
+    /**
+     * Método que pega o tipo de uma funçao
+     * @param id nome da função
+     * @param params  string concatenada com seus parâmetros
+     * @return String contendo o tipo da função caso não exista retorna string vazia ""
+     */
     public String getTypeFunctProc(String id, String params) {
         Object o = tabSimbolos.get("global");
         if (o instanceof GlobalValues) {
@@ -344,7 +356,13 @@ public class AcoesSemanticas {
         }
         return "";
     }
-
+    /**
+     * Método que passa as informações de uma struct para outra
+     * @param idParent nome da struct pai
+     * @param escopoParent escopo da struct pai
+     * @param idChild nome da struct filho
+     * @param escopoChild escopo da struct filho
+     */
     public void cloneStruct(String idParent, String escopoParent, String idChild, String escopoChild) {
         Object o = tabSimbolos.get(escopoParent);
         Composta parentTemp = null;
@@ -368,7 +386,7 @@ public class AcoesSemanticas {
                         if (((Composta) obj).getId().equals(idChild)) {
                             ((Composta) obj).setParent(parentTemp.getParent());
                             ((Composta) obj).setListVars(parentTemp.getListVars());
-                            //testar se tá setando mesmo
+                            //teste para ver se tá fazendo a transferência correta
                             /* Iterator itTeste = (Iterator) ((GlobalValues) o2).getVariaveis().iterator();
                             while (itTeste.hasNext()) {
                                 Object ob = itTeste.next();
@@ -399,13 +417,11 @@ public class AcoesSemanticas {
                         if (((Composta) obj).getId().equals(idChild)) {
                             ((Composta) obj).setParent(parentTemp.getParent());
                             ((Composta) obj).setListVars(parentTemp.getListVars());
-
-                            //testar se tá setando mesmo
                         }
                     }
                 }
             }
-            //else de foraaaaaaaaaaaaaaaaaaaaaaaa
+            
         } else if (o instanceof FunctionProcedure) {
             Iterator it = (Iterator) ((FunctionProcedure) o).getListVars().iterator();
             while (it.hasNext()) {
@@ -426,7 +442,6 @@ public class AcoesSemanticas {
                         if (((Composta) obj).getId().equals(idChild)) {
                             ((Composta) obj).setParent(parentTemp.getParent());
                             ((Composta) obj).setListVars(parentTemp.getListVars());
-                            //testar se tá setando mesmo
                         }
                     }
                 }
@@ -438,15 +453,18 @@ public class AcoesSemanticas {
                         if (((Composta) obj).getId().equals(idChild)) {
                             ((Composta) obj).setParent(parentTemp.getParent());
                             ((Composta) obj).setListVars(parentTemp.getListVars());
-
-                            //testar se tá setando mesmo
                         }
                     }
                 }
             }
         }
     }
-
+    
+    /**
+     * Método que verifica se uma variável é constante
+     * @param id nome da variável
+     * @return true: é constantte, false: não é
+     */
     public boolean isConst(String id) {
         Object o = tabSimbolos.get("global");
         if (o instanceof GlobalValues) {
@@ -565,7 +583,13 @@ public class AcoesSemanticas {
         }
         return false;
     }
-
+    /**
+     * Método que verifica se o tipo bate com o tipo da variável
+     * @param type tipo a ser analisado
+     * @param escopo escopo 
+     * @param idVar nome da variável a ser comparada
+     * @return true: tipos correspondem, false: não correspondem
+     */
     public boolean checkReturnType(String type, String escopo, String idVar) {
         Object o = tabSimbolos.get(escopo);
         if (o instanceof FunctionProcedure) {
@@ -615,7 +639,12 @@ public class AcoesSemanticas {
         }
         return false;
     }
-
+    /**
+     * Método que checa o tipo do valor de uma constante
+     * @param type tipo esperado
+     * @param t token a ser analisado
+     * @return  true: corresponde ao parameto type, false: não corresponde
+     */
     public boolean checkType(String type, Token t) {
         if (type.equals("string")) {
             return t.getTipo().equals("CDC");
@@ -640,7 +669,12 @@ public class AcoesSemanticas {
         }
         return false;
     }
-
+    /**
+     * Método que verifica se uma varíavel é do tipo struct
+     * @param id nome da variável
+     * @param escopo escopo a realizar a busca
+     * @return true: variável é do tipo struct, false: não é
+     */
     public boolean isStruct(String id, String escopo) {
         Object o = tabSimbolos.get(escopo);
 
@@ -669,7 +703,12 @@ public class AcoesSemanticas {
         }
         return false;
     }
-
+    /**
+     * Método que verifica se a struct pai existe
+     * @param id nome da struct pai
+     * @param escopo escopo a se buscar
+     * @return true: existe, false: não existe
+     */
     public boolean parentExist(String id, String escopo) {
         boolean achouLocal = false;
         Object o = tabSimbolos.get(escopo);
@@ -724,7 +763,13 @@ public class AcoesSemanticas {
         }
         return false;
     }
-
+    /**
+     * Método que verifica se existe um determinado atributo em uma struct
+     * @param idVar nome do atributo
+     * @param idStruct nome da struct a ser feita a busca
+     * @param escopo escopo da struct
+     * @return true: existe, false: não existe.
+     */
     public boolean existInStruct(String idVar, String idStruct, String escopo) {
         Object o = tabSimbolos.get(escopo);
 
@@ -775,7 +820,13 @@ public class AcoesSemanticas {
         }
         return false;
     }
-
+    /**
+     * Método que busca o tipo de um atributo de uma struct
+     * @param idVar nome do atributo
+     * @param idStruct nome da struct 
+     * @param escopo escopo da struct
+     * @return string com o tipo do atributo, caso não exista retorna string vazia ""
+     */
     public String getTypeVarInStruct(String idVar, String idStruct, String escopo) {
         Object o = tabSimbolos.get(escopo);
         if (o instanceof FunctionProcedure) {
@@ -825,7 +876,13 @@ public class AcoesSemanticas {
         }
         return "";
     }
-
+    /**
+     * Método que verifica se um atributo da struct filho ja foi declarado na struct pai
+     * @param id nome da variável
+     * @param escopo escopo
+     * @param linha linha do código
+     * @throws IOException 
+     */
     public void conflitParentVerification(String id, String escopo, int linha) throws IOException {
         Object o = tabSimbolos.get(escopo);
         if (o instanceof Composta) {
@@ -899,7 +956,12 @@ public class AcoesSemanticas {
         }
 
     }
-
+    /**
+     * Método que busca o tipo de uma varíavel num determinado escopo
+     * @param id nome da variável
+     * @param escopo escopo a ser feita a busca
+     * @return string com o tipo da variável, caso variável não exista retorna null
+     */
     public String getTypeVar(String id, String escopo) {
         Object o = tabSimbolos.get(escopo);
         if (o instanceof FunctionProcedure) {
@@ -946,7 +1008,11 @@ public class AcoesSemanticas {
         }
         return null;
     }
-
+    /**
+     * Método que verifica se um número é inteiro ou real
+     * @param indice lexema do numero
+     * @return true: é inteiro, false: é real
+     */
     public boolean intVerification(String indice) {
         char[] arrayString;
         arrayString = indice.toCharArray();
@@ -974,7 +1040,7 @@ public class AcoesSemanticas {
         return aux;
     }
 //********************** INICIO DOS PROCEDIMENTOS ***************************************
-
+    // Abaixo o nome dos métodos seguem os nomes dos Síbolos NÃO terminais da gramática
     private void start() throws IOException {
         globalValues();
         functionsProcedures();
@@ -2630,7 +2696,7 @@ public class AcoesSemanticas {
                         }
                         inCommands = false;
                     }
-
+                    // verificação de índice de array
                     if (inIndexArrayCheck) {
                         if (modifierTemp.equals("global")) {
                             if (!Contains(token.getLexema(), "global")) {
@@ -3019,13 +3085,22 @@ public class AcoesSemanticas {
 
             if (inIndexArrayCheck) {
                 //System.out.println(token.getLexema()+" "+isVarGlobal);
+
                 if (isVarGlobal) {
-                    if (!getTypeVarInStruct(token.getLexema(), nameIndexArrayTemp, "global").equals("int")) {
-                        setErro(token.getLinha(), "The array index is not an integer type");
+                    if (!existInStruct(token.getLexema(), nameIndexArrayTemp, "global")) {
+                        setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                    } else {
+                        if (!getTypeVarInStruct(token.getLexema(), nameIndexArrayTemp, "global").equals("int")) {
+                            setErro(token.getLinha(), "The array index is not an integer type");
+                        }
                     }
                 } else {
-                    if (!getTypeVarInStruct(token.getLexema(), nameIndexArrayTemp, escopo.peek()).equals("int")) {
-                        setErro(token.getLinha(), "The array index is not an integer type");
+                    if (!existInStruct(token.getLexema(), nameIndexArrayTemp, escopo.peek())) {
+                        setErro(token.getLinha(), "The Var \"" + token.getLexema() + "\" was not declared");
+                    } else {
+                        if (!getTypeVarInStruct(token.getLexema(), nameIndexArrayTemp, escopo.peek()).equals("int")) {
+                            setErro(token.getLinha(), "The array index is not an integer type");
+                        }
                     }
                 }
             }
